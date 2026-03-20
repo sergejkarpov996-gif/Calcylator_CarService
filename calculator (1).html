@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Калькулятор кузовного ремонта</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=PT+Sans:wght@400;700&display=swap');
+
+  :root {
+    --red: #d20124;
+    --dark: #111;
+    --mid: #222;
+    --gray: #c2c3c5;
+    --lightgray: #f0f0f0;
+    --text: #333;
+    --border: #ddd;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'PT Sans', sans-serif;
+    background: #1a1a1a;
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  #calculator {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+
+  h1 {
+    font-family: 'Oswald', sans-serif;
+    color: #fff;
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    padding-bottom: 12px;
+    border-bottom: 3px solid var(--red);
+  }
+
+  .top-bar {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+    gap: 0;
+    margin-bottom: 0;
+    align-items: stretch;
+  }
+
+  .calc-title {
+    background: var(--dark);
+    color: var(--red);
+    font-family: 'Oswald', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    padding: 20px;
+    line-height: 1.4;
+    display: flex;
+    align-items: center;
+    border-left: 4px solid var(--red);
+  }
+
+  .type-selector {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    border-top: 2px solid var(--gray);
+  }
+
+  .auto-btn {
+    background: var(--gray);
+    color: #555;
+    font-family: 'Oswald', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    text-transform: uppercase;
+    padding: 12px 10px 50px;
+    cursor: pointer;
+    text-align: center;
+    border-right: 1px solid #fff;
+    border-top: 3px solid transparent;
+    transition: all .2s;
+    user-select: none;
+  }
+
+  .auto-btn:hover, .auto-btn.active {
+    background: #333;
+    color: #bbb;
+    border-top-color: var(--red);
+  }
+
+  .counter-box {
+    background: #050505;
+    border: 2px solid #050505;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding: 15px;
+    gap: 10px;
+  }
+
+  .counter-item {
+    color: #848484;
+    font-family: 'Oswald', sans-serif;
+    font-size: 12px;
+    text-transform: uppercase;
+    text-align: center;
+  }
+
+  .counter-item .num {
+    color: #fff;
+    font-size: 28px;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    display: block;
+    margin-top: 4px;
+  }
+
+  .main-area {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 0;
+    background: #333;
+    min-height: 400px;
+  }
+
+  .big-car-area {
+    background: #333;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .car-svg-wrap {
+    display: none;
+    width: 100%;
+  }
+
+  .car-svg-wrap.active {
+    display: block;
+  }
+
+  .car-svg-wrap svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .top-view-area {
+    background: #1a1a1a;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .top-view-area svg {
+    width: 220px;
+    height: auto;
+    max-height: 420px;
+  }
+
+  /* Quick select */
+  .quick-select {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    background: #d7d8d9;
+    margin-top: 0;
+  }
+
+  .qs-label {
+    background: #d7d8d9;
+    font-family: 'Oswald', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #333;
+    padding: 12px 15px;
+    border-bottom: 3px solid var(--red);
+    white-space: nowrap;
+  }
+
+  .qs-btns {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .qs-btn {
+    background: #d7d8d9;
+    font-family: 'Oswald', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #333;
+    padding: 12px 15px;
+    border-right: 1px solid #fff;
+    border-bottom: 3px solid var(--red);
+    cursor: pointer;
+    transition: background .15s;
+  }
+
+  .qs-btn:hover { background: #c2c3c5; }
+
+  /* Parts tables */
+  .tables-section {
+    margin-top: 20px;
+  }
+
+  .part-table {
+    display: none;
+    margin-bottom: 10px;
+    box-shadow: 0 0 9px #ccc;
+    background: #fff;
+  }
+
+  .part-table.visible { display: block; }
+
+  .pt-inner {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .pt-trash {
+    width: 80px;
+    min-width: 80px;
+    border: 1px solid var(--border);
+    padding: 10px;
+    text-align: center;
+    cursor: pointer;
+  }
+
+  .pt-trash .col-label {
+    font-size: 11px;
+    color: #888;
+    border-bottom: 1px solid var(--border);
+    padding: 5px 0;
+    margin: -10px -10px 10px;
+  }
+
+  .pt-trash svg { fill: #ccc; transition: fill .2s; }
+  .pt-trash:hover svg { fill: var(--red); }
+
+  .pt-name {
+    width: 150px;
+    min-width: 150px;
+    border: 1px solid var(--border);
+    padding: 10px;
+    text-align: center;
+  }
+
+  .pt-name .col-label {
+    font-size: 11px;
+    color: #888;
+    border-bottom: 1px solid var(--border);
+    padding: 5px 0;
+    margin: -10px -10px 10px;
+  }
+
+  .pt-name .part-name-val {
+    font-size: 16px;
+    color: #4c4c4c;
+    margin-top: 8px;
+  }
+
+  .pt-services {
+    flex: 1;
+  }
+
+  .pt-services-inner {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .svc-col {
+    flex: 1;
+    min-width: 100px;
+    border: 1px solid var(--border);
+    padding: 10px;
+    text-align: center;
+  }
+
+  .svc-col .col-label {
+    font-size: 10px;
+    color: #888;
+    background: #f8f8f8;
+    border-bottom: 1px solid var(--border);
+    padding: 5px 0;
+    margin: -10px -10px 10px;
+    white-space: nowrap;
+  }
+
+  .svc-total-col {
+    flex: 1;
+    min-width: 100px;
+    border: 1px solid var(--border);
+    padding: 10px;
+    text-align: center;
+  }
+
+  .svc-total-col .col-label {
+    font-size: 11px;
+    color: #888;
+    border-bottom: 1px solid var(--border);
+    padding: 5px 0;
+    margin: -10px -10px 10px;
+  }
+
+  .svc-total-col .total-val {
+    font-size: 18px;
+    color: var(--red);
+    font-family: 'Oswald', sans-serif;
+    font-weight: 600;
+    margin-top: 8px;
+  }
+
+  .check-row {
+    display: none;
+    margin-bottom: 6px;
+  }
+
+  .check-row.for-sedan { display: none; }
+  .check-row.for-hatchback { display: none; }
+  .check-row.for-crossover { display: none; }
+
+  .check-row.show { display: block; }
+
+  .check-row .price-label {
+    font-size: 12px;
+    color: #4c4c4c;
+    margin-top: 4px;
+  }
+
+  /* Toggle switch */
+  .toggle-wrap {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    justify-content: center;
+    margin-top: 2px;
+  }
+
+  .toggle-cb {
+    position: absolute;
+    opacity: 0;
+    width: 0; height: 0;
+  }
+
+  .toggle-label {
+    position: relative;
+    width: 44px;
+    height: 22px;
+    cursor: pointer;
+    display: inline-block;
+  }
+
+  .toggle-label::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 44px; height: 22px;
+    border-radius: 11px;
+    background: #9a9a9a;
+    box-shadow: inset 0 2px 3px rgba(0,0,0,.2);
+    transition: background .2s;
+  }
+
+  .toggle-label::after {
+    content: '';
+    position: absolute;
+    top: -1px; left: -1px;
+    width: 24px; height: 24px;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 2px 5px rgba(0,0,0,.3);
+    transition: left .2s;
+  }
+
+  .toggle-cb:checked + .toggle-label::before { background: var(--red); }
+  .toggle-cb:checked + .toggle-label::after { left: 21px; }
+
+  /* SVG detal styles */
+  .detal {
+    cursor: pointer;
+    fill: #fff;
+    fill-opacity: 0.5;
+    stroke: #000;
+    stroke-width: 0.5;
+    transition: fill .15s, fill-opacity .15s;
+  }
+
+  .detal:hover {
+    fill: #ff4444 !important;
+    fill-opacity: 0.65 !important;
+  }
+
+  .detal.on {
+    fill: var(--red) !important;
+    fill-opacity: 0.75 !important;
+  }
+
+  /* more info bar */
+  .more-info {
+    padding: 15px 20px;
+    color: #999;
+    font-size: 13px;
+    background: #111;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 400;
+    letter-spacing: 0.5px;
+  }
+
+  .more-info span {
+    background: #2a2a2a;
+    color: #ccc;
+    padding: 5px 10px;
+    text-transform: uppercase;
+    font-weight: 500;
+    font-size: 12px;
+    margin: 0 4px;
+  }
+
+  .more-info .sum-val { color: var(--red); }
+
+  @media (max-width: 900px) {
+    .top-bar { grid-template-columns: 1fr 1fr; }
+    .calc-title { grid-column: 1/-1; }
+    .main-area { grid-template-columns: 1fr; }
+    .top-view-area { display: none; }
+    .pt-name { width: 120px; min-width: 120px; }
+    .svc-col { min-width: 80px; }
+  }
+
+  @media (max-width: 600px) {
+    .top-bar { grid-template-columns: 1fr; }
+    .counter-box { grid-column: 1/-1; }
+    .pt-trash { width: 60px; min-width: 60px; }
+    .pt-name { width: 100px; min-width: 100px; font-size: 13px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="calculator">
+  <h1>Калькулятор кузовного ремонта</h1>
+
+  <div class="top-bar">
+    <div class="calc-title">Для расчёта нажмите на деталь автомобиля</div>
+    <div class="type-selector">
+      <div class="auto-btn active" data-type="sedan">Sedan</div>
+      <div class="auto-btn" data-type="hatchback">Hatchback</div>
+      <div class="auto-btn" data-type="crossover">Crossover</div>
+    </div>
+    <div class="counter-box">
+      <div class="counter-item">элементов<span class="num" id="el-count">0</span></div>
+      <div class="counter-item">на сумму<span class="num sum-display" id="el-sum">0 ₽</span></div>
+    </div>
+  </div>
+
+  <div class="main-area">
+    <div class="big-car-area">
+
+      <!-- SEDAN -->
+      <div class="car-svg-wrap active" id="type_sedan">
+        <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 870 400">
+          <rect width="870" height="400" fill="#333"/>
+          <path class="detal" data-name="pb" id="s-pb" d="m64.99974,237.49905c0,0 -7.49997,0 -7.49997,0c0,0 -1,-6.49997 -1,-6.49997c0,0 -6.99997,1.49999 -8.99996,17.49993c-7.49997,15.49993 -6.99997,15.99993 -6.99997,15.99993c0,0 -3.49999,13.49995 0.5,23.49991c3.99998,9.99996 -1.5,29.99988 -1.5,29.99988c0,0 1.99999,9.99996 32.49987,11.49995c30.49988,1.5 44.49982,3.49999 44.49982,3.49999c0,0 -11.99995,-67.49973 38.99985,-91.99963c-3.49999,-6.49998 -7.49998,-7.49998 -31.49988,-8.99997c-6.99997,7.99997 -23.9999,22.49991 -23.9999,22.49991c0,0 -40.49984,5.49998 -40.49984,-5.49998c8.99997,-11.49995 5.49998,-11.49995 5.49998,-11.49995z"/>
+          <path class="detal" data-name="lpk" id="s-lpk" d="m57.49977,230.99908c0,0 101.99959,-44.49983 255.49898,-48.99981c-4.99998,12.99995 -4.99998,12.99995 -4.99998,12.99995c0,0 18.99992,-1.99999 18.99992,-1.99999c0,0 -20.99991,10.99995 -20.99991,29.99988c0,18.99992 -0.5,75.99969 4.49998,82.49967c-48.99981,2.49999 -48.99981,2.49999 -48.99981,2.49999c0,0 1,-59.99976 -52.49979,-71.99971c-26.49989,-4.49999 -30.49987,-4.99998 -53.49978,4.49998c-1.99999,-7.99997 -10.49996,-8.99996 -31.99987,-9.99996c-15.49995,0 -30.49989,-6.49998 -59.49977,6.49997c-8.49996,0 -8.49996,0 -8.49996,0c0,0 1.99999,-5.99997 1.99999,-5.99997z"/>
+          <path class="detal" data-name="kap" id="s-kap" d="m55.99978,229.99908c0,0 13.49994,-21.49991 80.99967,-31.49987c18.49993,-10.99996 24.9999,-14.99994 138.49945,-20.99992c34.49986,4.49998 35.99985,3.99998 34.49986,4.49998c-68.49973,8.99997 -95.49962,-3.49998 -253.99898,47.99981z"/>
+          <path class="detal" data-name="lpd" id="s-lpd" d="m310.99876,306.99877c0,0 -8.99997,-29.49988 -3.99999,-91.99963c4.99998,-5.49998 3.99999,-8.99996 17.99993,-20.49992c66.99973,-55.49978 84.99966,-66.49973 129.99948,-79.99968c8.99996,-1.99999 23.49991,-3.99998 67.99973,-4.49998c-10.99996,71.99971 -10.99996,71.99971 -10.99996,71.99971c0,0 -11.49995,63.99975 -5.99997,117.99953c-196.49922,6.49997 -194.99922,6.99997 -194.99922,6.99997z"/>
+          <path class="detal" data-name="lp" id="s-lp" d="m261.498954,308.498766c0,0 -1.499994,23.999904 -1.499994,23.999904c0,0 371.998512,-5.499978 371.998512,-5.499978c0,0 -2.49999,-15.999936 2.999988,-34.99986c-130.999476,8.499966 -132.49947,7.999968 -132.49947,7.999968c0,0 -240.999036,8.499966 -240.999036,8.499966z"/>
+          <path class="detal" data-name="lzd" id="s-lzd" d="m523.9979,109.49956c0,0 -11.49995,74.4997 -11.49995,74.4997c0,0 -12.49995,71.49972 -5.99998,115.49954c114.99954,-6.99997 114.99954,-6.99997 114.99954,-6.99997c0,0 2,-24.9999 32.99987,-62.99975c10.49996,-7.49997 24.9999,-35.99985 30.99988,-50.99979c15.99994,-25.9999 1.99999,-32.99987 1.99999,-32.99987c-45.49982,-35.99986 -163.49935,-35.99986 -163.49935,-35.99986z"/>
+          <path class="detal" data-name="zb" id="s-zb" d="m735.99706,244.99902c0,0 49.9998,-10.99996 61.99975,-9.99996c14.99994,-6.49997 4.49998,-1.49999 16.49993,-12.49995c13.99995,0 7.49998,0.5 13.99995,0c-2.49999,4.99998 -2.49999,7.49997 10.49995,21.99991c2.99999,29.49988 1.5,30.49988 -12.49995,60.49976c-68.99972,13.49995 -68.99972,13.49995 -68.99972,13.49995c0,0 20.49992,-37.49985 -21.49991,-73.49971z"/>
+          <path class="detal" data-name="lzk" id="s-lzk" d="m312.99875,181.49927c0,0 -4.49998,13.49995 -4.49998,13.49995c0,0 18.49992,-1.99999 18.49992,-1.99999c0,0 69.49972,-69.99972 135.99946,-80.49968c114.49954,-8.49997 139.99944,3.49998 196.49921,16.99993c24.9999,17.49993 41.49983,11.49995 29.99988,44.49982c-32.49987,51.99979 -20.49991,34.99987 -32.49987,52.49979c-6.49997,10.49996 -27.99989,29.49989 -34.99986,65.99974c13.99995,-0.5 13.99995,-0.5 13.99995,-0.5c0,0 -0.50001,-31.49987 44.49982,-53.49978c23.4999,-4.49998 26.49989,-6.99998 55.99977,6.99997c65.49974,-10.49996 46.49982,-10.49996 64.99974,-10.99996c6.49998,-3.99998 6.49998,-3.49998 6.49998,-3.49998c0,0 5.49998,-7.99997 5.49998,-7.99997c0,0 -6.99998,-18.99993 -6.99998,-18.99993c-3.49999,-2.99999 9.99996,-18.49992 9.99996,-18.49992c0,0 5.49998,-0.5 6.49998,0.5c-1.5,-6.99998 -2.99999,-6.99998 -2.99999,-6.99998c0,0 1.49999,-11.99995 -4.49998,-11.49995c-5.99998,0.5 -57.49977,1.49999 -57.49977,-1.49999c-17.49993,-12.49995 -113.99955,-54.49979 -129.99948,-59.49977c-9.99996,-3.49999 -19.49992,1 -19.49992,1c0,0 -121.49952,-16.99993 -215.49914,8.99996c14.49994,-2.99998 24.4999,2.99999 24.4999,2.99999c-24.9999,12.49995 -100.4996,61.49976 -100.4996,61.49976c-1.99999,0.99999 -3.99998,0.49999 -3.99998,0.49999z"/>
+        </svg>
+      </div>
+
+      <!-- HATCHBACK -->
+      <div class="car-svg-wrap" id="type_hatchback">
+        <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 870 400">
+          <rect width="870" height="400" fill="#333"/>
+          <path class="detal" data-name="pb" d="m152.99718,266.99512c-30.33278,-23.66623 -29.99946,-23.66623 -29.99946,-23.66623c0,0 -4.33325,-6.99987 -4.33325,-6.99987c0,0 -16.33304,9.99981 -28.99947,12.3331c-3.33327,-2.33329 -8.99984,-1.99996 -8.99984,-1.99996c0,0 -7.99985,10.33315 -7.99985,10.33315c0,0 -2.66661,20.33295 0.33333,47.33246c-21.9996,26.66619 60.66555,15.33306 72.66534,20.66629c-0.99999,-25.66619 -9.66649,-22.99958 7.99985,-58.33226"/>
+          <path class="detal" data-name="lpk" d="m152.33052,266.32847c0,0 -29.3328,-22.66625 -29.3328,-22.66625c0,0 -4.33325,-8.66651 -4.33325,-8.66651c0,0 12.33311,-10.33315 12.33311,-10.33315c0,0 -6.33322,-3.99992 -30.99944,-1.99996c167.33028,-34.66603 79.33189,-15.66638 167.33028,-34.66603c36.99932,-8.99984 37.33265,-8.99984 36.99932,-8.99984c-0.33332,0 6.33322,8.33318 6.33322,8.33318c0,0 -19.6663,5.99989 -16.66636,62.99885c2.99995,56.99896 8.99984,51.3324 8.99984,51.3324c0,0 -23.66624,2.66661 -23.66624,2.66661c0,0 -4.99991,-63.33217 -62.33219,-68.99874c-48.99911,-5.99989 -64.66549,30.99944 -64.66549,30.99944z"/>
+          <path class="detal" data-name="kap" d="m277.66157,184.32997c0,0 -173.33017,39.66594 -176.99677,38.33263c-3.6666,-1.33331 50.33241,-27.33283 60.66556,-26.99951c8.33318,-5.99989 8.66651,-5.99989 8.66651,-5.99989c11.33312,-4.99991 101.6648,-11.66645 101.6648,-11.66645c-12.66644,3.6666 5.9999,6.33322 5.9999,6.33322z"/>
+          <path class="detal" data-name="lpd" d="m493,304.5c0,0 -17,-88.5 0.5,-125.5c12.5,-73 12.5,-74 12.5,-74c0,0 -72,3 -107,22c-35,19 -88.5,61.5 -88.5,61.5c-11.5,2.5 -28.5,46 -5.5,117.5c188.5,-2 188,-1.5 188,-1.5z"/>
+          <path class="detal" data-name="lp" d="m302.99444,302.66114c0,0 -23.33291,3.33327 -23.33291,3.33327c0,0 -2.33329,11.99978 0.66665,19.33298c338.99381,-1.66664 338.99381,-1.66664 338.99381,-1.66664c0,0 -3.33327,-13.99974 1.99996,-38.66596c-9.33316,0 -9.33316,0 -9.33316,0c0,0 -1.33331,14.6664 -16.66636,19.66631c-15.33305,4.99991 -289.66138,3.33327 -289.9947,2.33329c-1.99997,-4.66658 -2.33329,-4.33325 -2.33329,-4.33325z"/>
+          <path class="detal" data-name="lzd" d="m495,304.5c0,0 92,2 102,-1c10,-3 15,-19.5 15,-19.5c0,0 4.5,-24 25.5,-45.5c21,-21.5 25,-25 28,-32.5c3,-7.5 3.5,-7.5 -6.5,-28.5c-13,-20.5 -41.5,-67 -41.5,-67c0,0 -59.5,-11 -111,-6c-7.5,42 -11,73.5 -11,73.5c-16.5,40.5 -0.5,126.5 -0.5,126.5z"/>
+          <path class="detal" data-name="lzk" d="m310.5,187.5c0,0 -5.5,-9 -5.5,-9c0,0 91.5,-63 102.5,-62.5c11,0.5 -2,-3.5 -2,-3.5c0,0 135,-33 278,-6.5c5.5,7 5.5,7 5.5,7c0,0 65.5,34.5 107,57c1,7.5 1,7.5 1,7.5c0,0 -33,5 -33,5c0,0 -8.5,12.5 -8.5,12.5c0,0 2,7 2,7c0,0 -15.5,36.5 -15.5,36.5c0,0 -5.5,8 -5.5,8c0,0 -26,-18.5 -59,-13.5c-28,8.5 -42,10.5 -55.5,51c-9.5,0.5 -9.5,0.5 -9.5,0.5c0,0 5.5,-31 44,-65.5c12,-20.5 4.5,-10.5 12,-21c-53,-89 -52.5,-88 -52.5,-88c0,0 -21.5,-8 -107.5,-6c-104,12.5 -101,19 -101,19c0,0 -97,64.5 -97,64.5z"/>
+          <path class="detal" data-name="zb" d="m758.5,199.5c0,0 32,11 39,11.5c7,0.5 15.5,26 15.5,26c0,0 1,34.5 1,34.5c0,0 -21.5,30.5 -21.5,30.5c0,0 -37,10 -37,10c0,0 3.5,-52.5 -17.5,-65c21,-46 20.5,-47.5 20.5,-47.5z"/>
+          <path class="detal" data-name="bag" d="m686.296625,105.468741c0,0 54.483854,-1.999408 54.483854,-0.499852c0,1.499556 -7.99763,15.495408 -7.99763,15.495408c0,0 -3.998815,4.998519 -3.998815,4.998519c0,0 67.979855,41.987558 67.979855,41.987558c0,0 -107.468153,-53.484151 -107.468153,-53.484151c0,0 -2.999111,-8.497482 -2.999111,-8.497482z"/>
+        </svg>
+      </div>
+
+      <!-- CROSSOVER -->
+      <div class="car-svg-wrap" id="type_crossover">
+        <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 870 400">
+          <rect width="870" height="400" fill="#333"/>
+          <path class="detal" data-name="pb" d="m158.99786,239.49677c0,0 -20.49973,-13.99981 -20.49973,-13.99981c0,0 -26.99963,19.49973 -46.99936,20.49972c-1.99998,-3.49995 -1.99998,-3.49995 -1.99998,-3.49995c0,0 -11.99983,-0.5 -11.99983,-0.5c0,0 -4.99994,11.49985 -4.99994,11.49985c0,0 -5.99992,10.99985 -0.99998,52.49929c-2.99996,1.49998 -2.99996,1.49998 -2.99996,1.49998c0,0 2.49996,6.49991 2.49996,6.49991c0,0 21.49971,2.99996 38.49949,2.49997c0.49999,-75.49898 49.49933,-76.99896 49.49933,-76.99896z"/>
+          <path class="detal" data-name="lpk" d="m159.99784,238.99677c0,0 -38.99947,-23.49968 -38.99947,-23.49968c0,0 -8.49989,-0.99999 -8.49989,-0.99999c0,0 68.99908,-26.99963 155.49791,-25.99964c8.49989,-7.9999 8.49989,-7.9999 8.49989,-7.9999c0,0 21.49971,-1.49998 21.49971,-1.49998c0,0 6.49991,-4.49994 6.49991,-4.49994c0,0 11.49984,2.49997 11.49984,2.49997c0,0 -21.4997,17.49977 -27.49962,36.49951c6.9999,94.49873 0.49999,46.49937 5.99991,97.49869c-27.49963,1.99997 -27.49963,1.99997 -27.49963,1.99997c0,0 -3.49995,-59.4992 -40.99944,-73.49901c-30.99958,-10.99985 -65.99912,-0.5 -65.99912,-0.5z"/>
+          <path class="detal" data-name="kap" d="m113.49847,213.49712c0,0 -25.99965,5.49992 -34.49953,10.49986c-2.49997,-0.99999 -2.99996,-1.99998 -2.99996,-1.99998c0,0 2.49996,-5.49992 2.49996,-5.49992c0,0 85.49885,-37.99949 186.49749,-38.49948c10.49986,1.99997 10.49986,1.99997 10.49986,1.99997c0,0 -6.99991,7.99989 -6.99991,7.99989c-91.49876,-1.49998 -154.99791,25.49966 -154.99791,25.49966z"/>
+          <path class="detal" data-name="lpd" d="m296.996,312.49578c0,0 176.99762,-3.49995 176.99762,-3.49995c0,0 -11.49985,-85.49885 2.49996,-124.99831c17.49977,-77.99895 17.49977,-77.99895 17.49977,-77.99895c0,0 -73.99901,-1.99998 -106.99856,17.49976c-56.99923,34.49954 -71.49904,54.49927 -71.49904,54.49927c0,0 -18.99974,15.99978 -25.99965,33.99954c2.99996,87.49882 7.4999,100.49864 7.4999,100.49864z"/>
+          <path class="detal" data-name="lp" d="m261.996471,314.495758c0,0 328.995568,-7.499899 328.995568,-7.499899c0,0 -2.499966,18.999744 -2.499966,18.999744c0,0 0.999987,6.499912 0.999987,6.499912c0,0 -121.498363,-7.499899 -323.995636,0.999987c-3.999946,-18.999744 -3.499953,-18.999744 -3.499953,-18.999744z"/>
+          <path class="detal" data-name="lzd" d="m584.99212,306.49587c0,0 -110.9985,1.99997 -110.9985,1.99997c0,0 -10.99986,-101.99863 3.49995,-124.49832c15.99978,-77.49896 15.99978,-77.49896 15.99978,-77.49896c0,0 61.49917,-3.99995 121.99836,-0.99999c43.49941,80.99891 43.49941,80.99891 43.49941,80.99891c0,0 7.9999,7.99989 -12.49983,49.99933c-39.49947,7.99989 -49.49933,32.99955 -49.49933,32.99955c0,0 -9.99987,17.99976 -11.99984,36.99951z"/>
+          <path class="detal" data-name="lzk" d="m304.4959,172.99766c0,0 86.49884,-64.49912 97.99868,-65.49911c7.99989,-9.99987 138.99813,-14.9998 299.99596,-1.49998c6.9999,9.99986 6.9999,10.49985 6.9999,10.49985c0,0 82.99889,57.99922 86.99883,57.49923c3.99995,-0.49999 0.49999,16.99977 0.49999,16.99977c0,0 -5.99991,-10.49986 -5.99991,-10.49986c0,0 -28.99961,-3.49995 -33.99955,1.49998c-4.99993,4.99994 -3.99994,7.4999 -3.99994,7.4999c0,0 11.99984,17.99976 11.99984,17.99976c0,0 3.99994,2.99996 3.99994,2.99996c0,0 -6.49991,6.9999 -6.49991,6.9999c0,0 -48.99934,25.99965 -48.99934,25.99965c0,0 -29.9996,-14.99979 -65.49912,-7.49989c11.99984,-47.49936 12.49983,-29.9996 11.49985,-47.49936c-43.99941,-82.99889 -43.99941,-82.99889 -43.99941,-82.99889c0,0 -180.49757,-0.49999 -198.99732,6.49992c-21.99971,7.99988 -16.49978,0 -75.99898,42.49942c-23.99967,22.4997 -23.99967,22.4997 -23.99967,22.4997c0,0 -11.99984,-3.99995 -11.99984,-3.99995z"/>
+          <path class="detal" data-name="zb" d="m712.9904,244.99669c0,0 49.99932,-26.99963 49.99932,-26.99963c0,0 6.49992,-7.4999 6.49992,-7.4999c0,0 16.49977,5.99992 25.49965,10.99985c2.99996,16.99977 2.49997,16.49978 2.49997,16.49978c0,0 4.99993,-1.49998 11.99984,11.99984c-2.49997,28.99961 -2.49997,28.99961 -2.49997,28.99961c0,0 -16.49978,-1.99998 -26.49964,10.99985c-25.99965,3.99994 -37.4995,5.49992 -37.4995,5.49992c0,0 -8.49988,-48.49934 -29.99959,-50.49932z"/>
+          <path class="detal" data-name="bag" d="m701.49055,104.99858c0,0 47.49936,6.49991 50.49932,8.99988c2.99996,2.49996 -3.99995,6.9999 -3.99995,6.9999c0,0 49.99933,52.99929 49.99933,52.99929c0,0 -66.9991,-35.49952 -73.99901,-47.49936c-8.49988,-4.49994 -13.49981,-8.49989 -13.49981,-8.49989c0,0 -5.99992,-9.49987 -8.99988,-12.99982z"/>
+        </svg>
+      </div>
+
+    </div>
+
+    <!-- TOP VIEW -->
+    <div class="top-view-area">
+      <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 739">
+        <rect width="480" height="739" fill="#1a1a1a"/>
+        <g stroke="#888888" fill="#ffffff" style="opacity:0.8">
+          <path class="detal" data-name="lp" fill="#fff" d="M49.1,208.5c-3.8-0.1-7.6-0.7-11.1-1.7h-0.4v210.1c3.7-1.1,7.5-1.7,11.5-1.8V208.5z"/>
+          <path class="detal" data-name="lpd" fill="#ffffff" d="M163.1,304.9c-5.2-23-36.7-75.3-36.7-75.3c-5.8-5-14.7-6.1-22.8-6H52.8v116.1h73.5L169,353C168.5,337.5,166.8,321.1,163.1,304.9z M126.2,327.4l-4.9-76.7c-0.2-2.8,3.4-4,5-1.8c8.7,12.4,25.2,38.7,30.2,66.1c1.5,8.1,2.4,16.3,3,24.4L126.2,327.4z"/>
+          <path class="detal" data-name="lzd" fill="#ffffff" d="M134.5,441.9c16.6-18.8,27.9-31.7,31.7-36.1c1.8-13.9,3.1-30.8,2.8-49.1l-42.8-13.5H52.7v38.3l58.9,61.3c2.9,2.8,6.7,4.4,10.7,4.4h0.3C127.2,447.3,131.5,445.3,134.5,441.9z M126.2,354.7l34,8c-0.1,16.3-0.9,27.2-2.3,38.6l-22.4,23.3c-2.2,2.3-6,0.8-6.2-2.3L126.2,354.7z"/>
+          <path class="detal" data-name="lzk" fill="#ffffff" d="M98.5,530.4c0.3-3.3,2.6-6.3,6-7.1c4.3-1.1,8.6,1.5,9.7,5.8l4.4,17.4l7.6-2.1l5.8-39.1l22.8-52.3c3.7-8.5,6.5-17.4,8.2-26.6c0.8-4,1.6-8.7,2.3-14c-4.5,5.1-12.7,14.5-28.2,32c-3.7,4.2-9,6.5-14.5,6.5h-0.3c-5,0-9.7-1.9-13.3-5.5l-56.4-58.7v28.5c0.8,0,1.5,0.1,2.3,0.2c22.5,2.2,40,21.1,40.7,43.7c0.4,14.1-5.7,26.8-15.4,35.3l7.2,27.4C88.8,526.8,93.4,530.2,98.5,530.4z"/>
+          <path class="detal" data-name="lpk" fill="#fff" d="M94.6,111.8c-1.5,1.7-3.7,2.8-6.1,2.7c-4.4,0-8-3.7-7.9-8.1v-4.3c-2.6,0.7-4.5,3.1-4.5,6v18.1c11.5,8,19.1,21.1,19.5,35.9c0.7,24.8-18.6,45.3-43,46.4V220h50.8c2.1,0,4.2,0,6.3,0.1C113.8,151.6,98.9,119.5,94.6,111.8z"/>
+          <path class="detal" data-name="pp" fill="#fff" d="M430.9,208.5c3.8-0.1,7.6-0.7,11.1-1.7h0.4v210.1c-3.7-1.1-7.5-1.7-11.5-1.8V208.5z"/>
+          <!-- Верхнее левое колесо (lpk) -->
+          <circle fill="#333" cx="50.4" cy="163.3" r="35.9"/>
+          <circle fill="#555" cx="50.4" cy="163.3" r="23.8"/>
+          <circle fill="#333" cx="50.4" cy="163.3" r="17.9"/>
+          <!-- Нижнее левое колесо (lzk) -->
+          <circle fill="#333" cx="50.4" cy="460.2" r="35.9"/>
+          <circle fill="#555" cx="50.4" cy="460.2" r="23.8"/>
+          <circle fill="#333" cx="50.4" cy="460.2" r="17.9"/>
+          <!-- Верхнее правое колесо (ppk) -->
+          <circle fill="#333" cx="429.5" cy="163.3" r="35.9"/>
+          <circle fill="#555" cx="429.5" cy="163.3" r="23.8"/>
+          <circle fill="#333" cx="429.5" cy="163.3" r="17.9"/>
+          <!-- Нижнее правое колесо (pzk) -->
+          <circle fill="#333" cx="429.5" cy="460.2" r="35.9"/>
+          <circle fill="#555" cx="429.5" cy="460.2" r="23.8"/>
+          <circle fill="#333" cx="429.5" cy="460.2" r="17.9"/>
+          <path class="detal" data-name="ppd" fill="#fff" d="M311.1,353l42.7-13.3h73.5V223.6h-50.8c-8.1,0-17,1-22.8,6c0,0-31.5,52.3-36.7,75.3C313.2,321.1,311.5,337.5,311.1,353z M320.6,339.5c0.6-8.1,1.6-16.3,3-24.4c4.9-27.3,21.4-53.6,30.2-66.1c1.6-2.3,5.1-1,5,1.8l-4.9,76.7L320.6,339.5z"/>
+          <path class="detal" data-name="pzd" fill="#fff" d="M357.4,447.3h0.3c4.1,0,7.9-1.6,10.7-4.4l58.9-61.3v-38.3h-73.5L311,356.7c-0.3,18.3,1,35.2,2.8,49.1c3.8,4.4,15.2,17.3,31.7,36.1C348.5,445.3,352.8,447.3,357.4,447.3z"/>
+          <path class="detal" data-name="pzk" fill="#fff" d="M381.5,530.4c-0.3-3.3-2.6-6.3-6-7.1c-4.3-1.1-8.6,1.5-9.7,5.8l-4.4,17.4l-7.6-2.1l-5.8-39.1L325.2,453c-3.7-8.5-6.5-17.4-8.2-26.6c-0.8-4-1.6-8.7-2.3-14c4.5,5.1,12.7,14.5,28.2,32c3.7,4.2,9,6.5,14.5,6.5h0.3c5,0,9.7-1.9,13.3-5.5l56.4-58.7v28.5c-0.8,0-1.5,0.1-2.3,0.2c-22.5,2.2-40,21.1-40.7,43.7c-0.4,14.1,5.7,26.8,15.4,35.3l-7.2,27.4C391.2,526.8,386.6,530.2,381.5,530.4z"/>
+          <path class="detal" data-name="ppk" fill="#fff" d="M385.4,111.8c1.5,1.7,3.7,2.8,6.1,2.7c4.4,0,8-3.7,7.9-8.1v-4.3c2.6,0.7,4.5,3.1,4.5,6v18.1c-11.5,8-19.1,21.1-19.5,35.9c-0.7,24.8,18.6,45.3,43,46.4V220h-50.8c-2.1,0-4.2,0-6.3,0.1C366.2,151.6,381.1,119.5,385.4,111.8z"/>
+          <path class="detal" data-name="kap" fill="#ffffff" d="M126,205.3C124.7,127.5,103,90.1,96.9,81l-0.2,25.6c0,0.5-0.1,0.9-0.1,1.3c1.6,2.3,21.6,33,16.9,112.3c4.6,0.5,9.1,1.7,13,4.6L126,205.3z"/>
+          <path class="detal" data-name="kap" fill="#ffffff" d="M354,205.3c1.3-77.8,23-115.2,29.1-124.3l0.2,25.6c0,0.5,0.1,0.9,0.1,1.3c-1.6,2.3-21.6,33-16.9,112.3c-4.6,0.5-9.1,1.7-13,4.6L354,205.3z"/>
+          <path class="detal" data-name="kap" fill="#ffffff" d="M170.7,222.2c16.7-14.8,53.4-16.4,65.7-16.4c1.1,0,6,0,7.1,0c12.4,0,49,1.6,65.7,16.4h5.8l-5.5-97.8l-31.3-23h-76.4l-31.3,23l-5.5,97.8H170.7z"/>
+          <path class="detal" data-name="kry" fill="#ffffff" d="M310.1,282.5l-3.4-6c-7.5-2.9-38.3-10.5-66.7-10.5s-59.1,7.6-66.7,10.5l-3.4,6c10.1,33.8,14.1,83.2,7.5,121.9l2.6,5.8h120l2.6-5.8C296,365.6,300,316.2,310.1,282.5z"/>
+          <path class="detal" data-name="zb" fill="#ffffff" d="M99,533.9c-6.8,0.1-13.1-4.5-14.9-11.4l-6.8-25.8c-7.5,5.5-16.7,8.8-26.7,8.8c-4.5,0-8.9-0.7-13-1.9l0,0c0.7,4.4,15,45.4,15,45.4l15.7,2.4l5.2,7.6l29.8-8.3L99,533.9z"/>
+          <path class="detal" data-name="zb" fill="#ffffff" d="M381,533.9c6.8,0.1,13.1-4.5,14.9-11.4l6.8-25.8c7.5,5.5,16.7,8.8,26.7,8.8c4.5,0,8.9-0.7,13-1.9l0,0c-0.7,4.4-15,45.4-15,45.4l-15.7,2.4l-5.2,7.6l-29.8-8.3L381,533.9z"/>
+          <path class="detal" data-name="zb" fill="#ffffff" d="M306.5,566.4c0,0-2.6-9.3-2.7-11.2h-12.9l0,0H284l-6.5,11.9h-75.2l-6.5-11.9H189l0,0h-12.9c-0.1,1.9-2.7,11.2-2.7,11.2s-6.5,0.1-7.9,0.5c0,2,2.7,31.4,2.7,31.4h11.6l5-10H295l5,10h11.6c0,0,2.7-29.4,2.7-31.4C313,566.5,306.5,566.4,306.5,566.4z"/>
+          <path class="detal" data-name="pb" fill="#fff" d="M305.7,41.6h-17.4l-5.1,13.8h-86.5l-5.1-13.8h-17.4l-9.1,13.8v12.2h4.9c5.2,0,9.3,4.2,9.3,9.3v4.2h11.6c3.9,0,7.5,2.2,9.4,5.6l2.7,5h73.8l2.7-5c1.9-3.5,5.5-5.6,9.4-5.6h11.6V77c0-5.2,4.2-9.3,9.3-9.3h4.9V55.5L305.7,41.6z"/>
+          <path class="detal" data-name="pb" fill="#fff" d="M72.6,123.9v-15.8c0-4.8,3.5-8.8,8.1-9.6l0.2-16.7l-22.3,0.1L55.1,91l-9.8,3l-7.6,26c5.4-1.6,11.3-2.2,17.4-1.6C61.4,119,67.3,121,72.6,123.9z"/>
+          <path class="detal" data-name="pb" fill="#fff" d="M407.4,123.9v-15.8c0-4.8-3.5-8.8-8.1-9.6l-0.2-16.7l22.3,0.1l3.5,9.1l9.8,3.1l7.6,26.1c-5.4-1.6-11.3-2.2-17.4-1.6C418.6,119,412.7,121,407.4,123.9z"/>
+          <path class="detal" data-name="bag" fill="#ffffff" d="M274.3,535.7h16.6c0-7.4,0-20.7,0-29.6h-7.5c-9,4.2-25.1,7-43.4,7c-18.4,0-34.5-2.8-43.4-7H189c0,8.9,0,22.2,0,29.6h16.6c5.4,0,9.7,4.4,9.7,9.7l0,0c0,5.4-4.4,9.7-9.7,9.7H201l4,7.5h69.9l4-7.5h-4.6c-5.4,0-9.7-4.4-9.7-9.7l0,0C264.6,540.1,269,535.7,274.3,535.7z"/>
+        </g>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Quick select row -->
+  <div class="quick-select">
+    <div class="qs-label">Быстрый выбор:</div>
+    <div class="qs-btns">
+      <div class="qs-btn" data-group="right">Справа</div>
+      <div class="qs-btn" data-group="left">Слева</div>
+      <div class="qs-btn" data-group="lobby">Перед</div>
+      <div class="qs-btn" data-group="rear">Зад</div>
+      <div class="qs-btn" data-group="bumpers">Бамперы</div>
+      <div class="qs-btn" data-group="all">Все</div>
+    </div>
+  </div>
+
+  <div class="more-info">
+    Тип кузова: <span id="mi-type">Sedan</span>
+    выбрано элементов: <span id="mi-count">0</span>
+    на общую сумму: <span id="mi-sum" class="sum-val">0 ₽</span>
+  </div>
+
+  <!-- TABLES SECTION -->
+  <div class="tables-section" id="tables-section"></div>
+
+</div>
+
+<script>
+// Part data
+const PARTS = [
+  { id:'pzk', name:'Правое заднее крыло',   groups:['right','rear','all'],
+    prices:{ sedan:{p:11000,r1:5000,r2:10000,z:3000,s:2000}, hatchback:{p:11000,r1:5000,r2:10000,z:3000,s:2000}, crossover:{p:11000,r1:5000,r2:12000,z:3000,s:2000} } },
+  { id:'pp',  name:'Правый порог',           groups:['right','all'],
+    prices:{ sedan:{p:11500,r1:5000,r2:10000,z:2000,s:2000}, hatchback:{p:11500,r1:5000,r2:10000,z:2000,s:2000}, crossover:{p:11500,r1:5000,r2:10000,z:2000,s:2000} } },
+  { id:'pzd', name:'Правая задняя дверь',   groups:['right','rear','all'],
+    prices:{ sedan:{p:11000,r1:5000,r2:10000,z:3000,s:1500}, hatchback:{p:11000,r1:5000,r2:10000,z:3000,s:1500}, crossover:{p:11000,r1:5000,r2:10000,z:3000,s:1500} } },
+  { id:'ppd', name:'Правая передняя дверь', groups:['right','lobby','all'],
+    prices:{ sedan:{p:11000,r1:5000,r2:10000,z:3000,s:1500}, hatchback:{p:11000,r1:5000,r2:10000,z:3000,s:1500}, crossover:{p:11000,r1:5000,r2:10000,z:3000,s:1500} } },
+  { id:'ppk', name:'Правое переднее крыло', groups:['right','lobby','all'],
+    prices:{ sedan:{p:11000,r1:5000,r2:10000,z:3000,s:2000}, hatchback:{p:11000,r1:5000,r2:10000,z:3000,s:2000}, crossover:{p:11000,r1:5000,r2:10000,z:3000,s:2000} } },
+  { id:'bag', name:'Багажник',              groups:['rear','all'],
+    prices:{ sedan:{p:11000,r1:5000,r2:10000,z:0,s:2500}, hatchback:{p:11000,r1:5000,r2:10000,z:0,s:2500}, crossover:{p:11000,r1:5000,r2:10000,z:0,s:2500} } },
+  { id:'kry', name:'Крыша',                groups:['lobby','all'],
+    prices:{ sedan:{p:20000,r1:10000,r2:15000,z:0,s:0}, hatchback:{p:20000,r1:10000,r2:15000,z:0,s:0}, crossover:{p:20000,r1:10000,r2:15000,z:0,s:0} } },
+  { id:'kap', name:'Капот',                groups:['lobby','all'],
+    prices:{ sedan:{p:18500,r1:5000,r2:12000,z:0,s:1000}, hatchback:{p:18500,r1:5000,r2:12000,z:0,s:1000}, crossover:{p:18500,r1:5000,r2:12000,z:0,s:1000} } },
+  { id:'zb',  name:'Задний бампер',        groups:['rear','bumpers','all'],
+    prices:{ sedan:{p:11000,r1:5000,r2:10000,z:3000,s:1500}, hatchback:{p:11000,r1:5000,r2:10000,z:3000,s:1500}, crossover:{p:11000,r1:5000,r2:10000,z:3000,s:1500} } },
+  { id:'pb',  name:'Передний бампер',      groups:['lobby','bumpers','all'],
+    prices:{ sedan:{p:11000,r1:5000,r2:10000,z:3000,s:1500}, hatchback:{p:11000,r1:5000,r2:10000,z:3000,s:1500}, crossover:{p:11000,r1:5000,r2:10000,z:3000,s:1500} } },
+  { id:'lzk', name:'Левое заднее крыло',   groups:['left','rear','all'],
+    prices:{ sedan:{p:11000,r1:5000,r2:10000,z:3000,s:2000}, hatchback:{p:11000,r1:5000,r2:10000,z:3000,s:2000}, crossover:{p:11000,r1:5000,r2:12000,z:3000,s:2000} } },
+  { id:'lp',  name:'Левый порог',          groups:['left','all'],
+    prices:{ sedan:{p:11500,r1:5000,r2:10000,z:0,s:2000}, hatchback:{p:11500,r1:5000,r2:10000,z:0,s:2000}, crossover:{p:11500,r1:5000,r2:10000,z:0,s:2000} } },
+  { id:'lzd', name:'Левая задняя дверь',   groups:['left','rear','all'],
+    prices:{ sedan:{p:11000,r1:5000,r2:10000,z:3000,s:1500}, hatchback:{p:11000,r1:5000,r2:10000,z:3000,s:1500}, crossover:{p:11000,r1:5000,r2:10000,z:3000,s:1500} } },
+  { id:'lpd', name:'Левая передняя дверь', groups:['left','lobby','all'],
+    prices:{ sedan:{p:11000,r1:5000,r2:10000,z:3000,s:1500}, hatchback:{p:11000,r1:5000,r2:10000,z:3000,s:1500}, crossover:{p:11000,r1:5000,r2:10000,z:3000,s:1500} } },
+  { id:'lpk', name:'Левое переднее крыло', groups:['left','lobby','all'],
+    prices:{ sedan:{p:11000,r1:5000,r2:10000,z:3000,s:2000}, hatchback:{p:11000,r1:5000,r2:10000,z:3000,s:2000}, crossover:{p:11000,r1:5000,r2:10000,z:3000,s:2000} } },
+];
+
+const SVC_KEYS = ['p','r1','r2','z','s'];
+const SVC_LABELS = ['Покраска','Ремонт < 50%','Ремонт > 50%','Замена','Снятие / установка'];
+
+let currentType = 'sedan';
+let selected = new Set(); // part ids selected
+let partSvcState = {}; // partId -> {svc: bool}
+PARTS.forEach(p => { partSvcState[p.id] = {}; SVC_KEYS.forEach(k => partSvcState[p.id][k] = false); });
+
+// Build tables
+function buildTables() {
+  const sec = document.getElementById('tables-section');
+  sec.innerHTML = '';
+  PARTS.forEach(part => {
+    const div = document.createElement('div');
+    div.className = 'part-table';
+    div.id = 'table_' + part.id;
+    div.innerHTML = buildTableHTML(part);
+    sec.appendChild(div);
+  });
+  // Attach checkbox listeners
+  PARTS.forEach(part => {
+    SVC_KEYS.forEach(k => {
+      const cb = document.getElementById('cb_' + part.id + '_' + k);
+      if (cb) {
+        cb.addEventListener('change', () => {
+          partSvcState[part.id][k] = cb.checked;
+          updatePartTotal(part.id);
+          updateTotal();
+        });
+      }
+    });
+    // Trash
+    const trash = document.getElementById('trash_' + part.id);
+    if (trash) trash.addEventListener('click', () => deselectPart(part.id));
+  });
+}
+
+function buildTableHTML(part) {
+  const pr = part.prices[currentType];
+  const svcCols = SVC_KEYS.map((k, i) => `
+    <div class="svc-col">
+      <div class="col-label">${SVC_LABELS[i]}</div>
+      <div class="toggle-wrap">
+        <input type="checkbox" class="toggle-cb" id="cb_${part.id}_${k}" ${partSvcState[part.id][k] ? 'checked' : ''}>
+        <label class="toggle-label" for="cb_${part.id}_${k}"></label>
+      </div>
+      <div class="price-label">${pr[k] > 0 ? pr[k].toLocaleString('ru') + ' ₽' : '—'}</div>
+    </div>
+  `).join('');
+
+  return `
+    <div class="pt-inner">
+      <div class="pt-trash" id="trash_${part.id}">
+        <div class="col-label">-</div>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="32" height="32">
+          <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12z"/>
+          <path d="M19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+        </svg>
+      </div>
+      <div class="pt-name">
+        <div class="col-label">элемент</div>
+        <div class="part-name-val">${part.name}</div>
+      </div>
+      <div class="pt-services">
+        <div class="pt-services-inner">
+          ${svcCols}
+          <div class="svc-total-col">
+            <div class="col-label">сумма</div>
+            <div class="total-val" id="total_${part.id}">0 ₽</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function rebuildTable(partId) {
+  const part = PARTS.find(p => p.id === partId);
+  const div = document.getElementById('table_' + partId);
+  if (!div || !part) return;
+  div.innerHTML = buildTableHTML(part);
+  // Reattach listeners
+  SVC_KEYS.forEach(k => {
+    const cb = document.getElementById('cb_' + partId + '_' + k);
+    if (cb) cb.addEventListener('change', () => {
+      partSvcState[partId][k] = cb.checked;
+      updatePartTotal(partId);
+      updateTotal();
+    });
+  });
+  const trash = document.getElementById('trash_' + partId);
+  if (trash) trash.addEventListener('click', () => deselectPart(partId));
+  updatePartTotal(partId);
+}
+
+function updatePartTotal(partId) {
+  const part = PARTS.find(p => p.id === partId);
+  const pr = part.prices[currentType];
+  let sum = 0;
+  SVC_KEYS.forEach(k => { if (partSvcState[partId][k]) sum += pr[k]; });
+  const el = document.getElementById('total_' + partId);
+  if (el) el.textContent = sum.toLocaleString('ru') + ' ₽';
+}
+
+function updateTotal() {
+  let total = 0;
+  selected.forEach(id => {
+    const part = PARTS.find(p => p.id === id);
+    const pr = part.prices[currentType];
+    SVC_KEYS.forEach(k => { if (partSvcState[id][k]) total += pr[k]; });
+  });
+  document.getElementById('el-count').textContent = selected.size;
+  const sumStr = total.toLocaleString('ru') + ' ₽';
+  document.getElementById('el-sum').textContent = sumStr;
+  document.getElementById('mi-count').textContent = selected.size;
+  document.getElementById('mi-sum').textContent = sumStr;
+  document.getElementById('mi-type').textContent = {sedan:'Sedan',hatchback:'Hatchback',crossover:'Crossover'}[currentType];
+}
+
+function selectPart(id) {
+  if (selected.has(id)) {
+    deselectPart(id);
+    return;
+  }
+  selected.add(id);
+  // highlight all SVG elements with this data-name
+  document.querySelectorAll(`.detal[data-name="${id}"]`).forEach(el => el.classList.add('on'));
+  // show table
+  const t = document.getElementById('table_' + id);
+  if (t) { t.classList.add('visible'); rebuildTable(id); }
+  updateTotal();
+}
+
+function deselectPart(id) {
+  selected.delete(id);
+  document.querySelectorAll(`.detal[data-name="${id}"]`).forEach(el => el.classList.remove('on'));
+  const t = document.getElementById('table_' + id);
+  if (t) t.classList.remove('visible');
+  // Reset checkboxes
+  SVC_KEYS.forEach(k => { partSvcState[id][k] = false; });
+  updateTotal();
+}
+
+// SVG click
+document.addEventListener('click', e => {
+  const detal = e.target.closest('.detal');
+  if (!detal) return;
+  const name = detal.dataset.name;
+  if (!name) return;
+  // Find canonical part id
+  const part = PARTS.find(p => p.id === name);
+  if (!part) return;
+  selectPart(part.id);
+});
+
+// Type switcher
+document.querySelectorAll('.auto-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.auto-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentType = btn.dataset.type;
+    document.querySelectorAll('.car-svg-wrap').forEach(w => w.classList.remove('active'));
+    document.getElementById('type_' + currentType).classList.add('active');
+    // Rebuild visible tables with new prices
+    selected.forEach(id => rebuildTable(id));
+    updateTotal();
+  });
+});
+
+// Quick select
+document.querySelectorAll('.qs-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const group = btn.dataset.group;
+    if (group === 'all') {
+      // toggle: if all selected, deselect all; else select all
+      const allIds = PARTS.map(p => p.id);
+      const allSelected = allIds.every(id => selected.has(id));
+      if (allSelected) {
+        allIds.forEach(id => deselectPart(id));
+      } else {
+        allIds.forEach(id => { if (!selected.has(id)) selectPart(id); });
+      }
+    } else {
+      const groupParts = PARTS.filter(p => p.groups.includes(group));
+      const allSelected = groupParts.every(p => selected.has(p.id));
+      if (allSelected) {
+        groupParts.forEach(p => deselectPart(p.id));
+      } else {
+        groupParts.forEach(p => { if (!selected.has(p.id)) selectPart(p.id); });
+      }
+    }
+  });
+});
+
+// Init
+buildTables();
+updateTotal();
+</script>
+</body>
+</html>
