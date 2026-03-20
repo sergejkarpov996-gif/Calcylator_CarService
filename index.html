@@ -18,9 +18,6 @@
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  * { -webkit-tap-highlight-color: transparent; }
-
-  svg { touch-action: manipulation; }
 
   body {
     font-family: 'PT Sans', sans-serif;
@@ -392,33 +389,16 @@
     stroke: #000;
     stroke-width: 0.5;
     transition: fill .15s, fill-opacity .15s;
-    -webkit-tap-highlight-color: transparent;
-    outline: none;
   }
 
-  /* hover только на устройствах с мышью */
-  @media (hover: hover) {
-    .detal:hover {
-      fill: #ff4444 !important;
-      fill-opacity: 0.65 !important;
-    }
+  .detal:hover {
+    fill: #ff4444 !important;
+    fill-opacity: 0.65 !important;
   }
 
   .detal.on {
     fill: var(--red) !important;
     fill-opacity: 0.75 !important;
-  }
-
-  /* на тач-устройствах убираем залипший hover */
-  @media (hover: none) {
-    .detal:hover {
-      fill: #fff !important;
-      fill-opacity: 0.5 !important;
-    }
-    .detal.on:hover {
-      fill: var(--red) !important;
-      fill-opacity: 0.75 !important;
-    }
   }
 
   /* more info bar */
@@ -772,7 +752,17 @@ function selectPart(id) {
 
 function deselectPart(id) {
   selected.delete(id);
-  document.querySelectorAll(`.detal[data-name="${id}"]`).forEach(el => el.classList.remove('on'));
+  document.querySelectorAll(`.detal[data-name="${id}"]`).forEach(el => {
+    el.classList.remove('on');
+    // Принудительно сбрасываем залипший hover на мобильных
+    el.style.fill = '#fff';
+    el.style.fillOpacity = '0.5';
+    // Убираем inline-стиль через requestAnimationFrame чтобы CSS снова взял контроль
+    requestAnimationFrame(() => {
+      el.style.fill = '';
+      el.style.fillOpacity = '';
+    });
+  });
   const t = document.getElementById('table_' + id);
   if (t) t.classList.remove('visible');
   // Reset checkboxes
@@ -789,6 +779,8 @@ document.addEventListener('click', e => {
   // Find canonical part id
   const part = PARTS.find(p => p.id === name);
   if (!part) return;
+  // Убираем фокус с элемента чтобы не залипал hover на мобильных
+  if (detal.blur) detal.blur();
   selectPart(part.id);
 });
 
