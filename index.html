@@ -17,9 +17,7 @@
     --border: #ddd;
   }
 
-  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  svg, path { outline: none; }
-  svg { touch-action: manipulation; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
     font-family: 'PT Sans', sans-serif;
@@ -244,7 +242,6 @@
 
   .pt-trash svg { fill: #ccc; transition: fill .2s; }
   .pt-trash:hover svg { fill: var(--red); }
-  .mobile-part-name { display: none; }
 
   .pt-name {
     width: 150px;
@@ -392,15 +389,11 @@
     stroke: #000;
     stroke-width: 0.5;
     transition: fill .15s, fill-opacity .15s;
-    -webkit-tap-highlight-color: transparent;
   }
 
-  /* hover только на устройствах с настоящей мышью */
-  @media (hover: hover) and (pointer: fine) {
-    .detal:hover {
-      fill: #ff4444 !important;
-      fill-opacity: 0.65 !important;
-    }
+  .detal:hover {
+    fill: #ff4444 !important;
+    fill-opacity: 0.65 !important;
   }
 
   .detal.on {
@@ -431,7 +424,6 @@
 
   .more-info .sum-val { color: var(--red); }
 
-  /* ── TABLET ── */
   @media (max-width: 900px) {
     .top-bar { grid-template-columns: 1fr 1fr; }
     .calc-title { grid-column: 1/-1; }
@@ -441,90 +433,11 @@
     .svc-col { min-width: 80px; }
   }
 
-  /* ── MOBILE ── */
   @media (max-width: 600px) {
-    h1 { font-size: 20px; letter-spacing: 1px; margin-bottom: 10px; }
-    #calculator { padding: 8px; }
-
-    /* Шапка */
     .top-bar { grid-template-columns: 1fr; }
-    .calc-title { display: none; }
-    .type-selector { grid-template-columns: 1fr 1fr 1fr; border-top: none; }
-    .auto-btn { padding: 10px 4px 40px; font-size: 11px; }
-    .counter-box { grid-template-columns: 1fr 1fr; padding: 10px; }
-    .counter-item .num { font-size: 22px; }
-
-    /* Блок машины — убираем min-height, схема сверху идёт под машиной */
-    .main-area {
-      grid-template-columns: 1fr;
-      display: flex;
-      flex-direction: column;
-    }
-    .big-car-area { min-height: unset; }
-    .top-view-area {
-      display: flex;
-      justify-content: center;
-      padding: 12px;
-      background: #1a1a1a;
-    }
-    .top-view-area svg {
-      width: 160px;
-      height: auto;
-    }
-
-    /* Быстрый выбор */
-    .quick-select { grid-template-columns: 1fr; }
-    .qs-label { padding: 8px 12px; font-size: 10px; border-bottom: none; }
-    .qs-btns { display: grid; grid-template-columns: repeat(3, 1fr); }
-    .qs-btn { padding: 10px 4px; font-size: 10px; text-align: center; }
-
-    /* Инфо-строка */
-    .more-info { font-size: 11px; padding: 10px 12px; }
-    .more-info span { font-size: 10px; padding: 3px 6px; margin: 2px; }
-
-    /* Таблицы деталей — вертикально */
-    .pt-inner { flex-direction: column; }
-    .pt-trash {
-      width: 100%; min-width: unset;
-      display: flex; align-items: center; gap: 10px;
-      padding: 8px 12px;
-      border-bottom: 2px solid var(--red);
-      background: #f8f8f8;
-      cursor: pointer;
-    }
-    .pt-trash .col-label { display: none; }
-    .pt-trash svg { width: 22px; height: 22px; flex-shrink: 0; }
-    .mobile-part-name {
-      display: block;
-      font-family: 'Oswald', sans-serif;
-      font-size: 13px; font-weight: 600;
-      color: #333; text-transform: uppercase; flex: 1;
-    }
-    .pt-name { display: none; }
-
-    /* Услуги — 2 колонки */
-    .pt-services { width: 100%; }
-    .pt-services-inner { display: grid; grid-template-columns: 1fr 1fr; }
-    .svc-col { min-width: unset; padding: 8px 6px; }
-    .svc-col .col-label { font-size: 9px; white-space: normal; line-height: 1.2; }
-
-    /* Итог — на всю ширину */
-    .svc-total-col {
-      grid-column: 1 / -1; min-width: unset;
-      padding: 8px 12px;
-      display: flex; align-items: center; justify-content: space-between;
-      border-top: 2px solid var(--border);
-      background: #f8f8f8;
-    }
-    .svc-total-col .col-label { margin: 0; border: none; padding: 0; font-size: 12px; }
-    .svc-total-col .total-val { margin: 0; font-size: 20px; }
-
-    /* Переключатели */
-    .toggle-label { width: 38px; height: 20px; }
-    .toggle-label::before { width: 38px; height: 20px; border-radius: 10px; }
-    .toggle-label::after { width: 20px; height: 20px; }
-    .toggle-cb:checked + .toggle-label::after { left: 18px; }
-    .price-label { font-size: 11px; }
+    .counter-box { grid-column: 1/-1; }
+    .pt-trash { width: 60px; min-width: 60px; }
+    .pt-name { width: 100px; min-width: 100px; font-size: 13px; }
   }
 </style>
 </head>
@@ -626,7 +539,7 @@
           <circle fill="#555" cx="429.5" cy="460.2" r="23.8"/>
           <circle fill="#333" cx="429.5" cy="460.2" r="17.9"/>
           <path class="detal" data-name="ppd" fill="#fff" d="M311.1,353l42.7-13.3h73.5V223.6h-50.8c-8.1,0-17,1-22.8,6c0,0-31.5,52.3-36.7,75.3C313.2,321.1,311.5,337.5,311.1,353z M320.6,339.5c0.6-8.1,1.6-16.3,3-24.4c4.9-27.3,21.4-53.6,30.2-66.1c1.6-2.3,5.1-1,5,1.8l-4.9,76.7L320.6,339.5z"/>
-          <path class="detal" data-name="pzd" fill="#fff" d="M357.4,447.3h0.3c4.1,0,7.9-1.6,10.7-4.4l58.9-61.3v-38.3h-73.5L311,356.7c-0.3,18.3,1,35.2,2.8,49.1c3.8,4.4,15.2,17.3,31.7,36.1C348.5,445.3,352.8,447.3,357.4,447.3z"/>
+          <path class="detal" data-name="pzd" fill="#fff" transform="translate(480,0) scale(-1,1)" d="M134.5,441.9c16.6-18.8,27.9-31.7,31.7-36.1c1.8-13.9,3.1-30.8,2.8-49.1l-42.8-13.5H52.7v38.3l58.9,61.3c2.9,2.8,6.7,4.4,10.7,4.4h0.3C127.2,447.3,131.5,445.3,134.5,441.9z M126.2,354.7l34,8c-0.1,16.3-0.9,27.2-2.3,38.6l-22.4,23.3c-2.2,2.3-6,0.8-6.2-2.3L126.2,354.7z"/>
           <path class="detal" data-name="pzk" fill="#fff" d="M381.5,530.4c-0.3-3.3-2.6-6.3-6-7.1c-4.3-1.1-8.6,1.5-9.7,5.8l-4.4,17.4l-7.6-2.1l-5.8-39.1L325.2,453c-3.7-8.5-6.5-17.4-8.2-26.6c-0.8-4-1.6-8.7-2.3-14c4.5,5.1,12.7,14.5,28.2,32c3.7,4.2,9,6.5,14.5,6.5h0.3c5,0,9.7-1.9,13.3-5.5l56.4-58.7v28.5c-0.8,0-1.5,0.1-2.3,0.2c-22.5,2.2-40,21.1-40.7,43.7c-0.4,14.1,5.7,26.8,15.4,35.3l-7.2,27.4C391.2,526.8,386.6,530.2,381.5,530.4z"/>
           <path class="detal" data-name="ppk" fill="#fff" d="M385.4,111.8c1.5,1.7,3.7,2.8,6.1,2.7c4.4,0,8-3.7,7.9-8.1v-4.3c2.6,0.7,4.5,3.1,4.5,6v18.1c-11.5,8-19.1,21.1-19.5,35.9c-0.7,24.8,18.6,45.3,43,46.4V220h-50.8c-2.1,0-4.2,0-6.3,0.1C366.2,151.6,381.1,119.5,385.4,111.8z"/>
           <path class="detal" data-name="kap" fill="#ffffff" d="M126,205.3C124.7,127.5,103,90.1,96.9,81l-0.2,25.6c0,0.5-0.1,0.9-0.1,1.3c1.6,2.3,21.6,33,16.9,112.3c4.6,0.5,9.1,1.7,13,4.6L126,205.3z"/>
@@ -762,7 +675,6 @@ function buildTableHTML(part) {
           <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12z"/>
           <path d="M19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
         </svg>
-        <span class="mobile-part-name">${part.name}</span>
       </div>
       <div class="pt-name">
         <div class="col-label">элемент</div>
@@ -840,19 +752,10 @@ function selectPart(id) {
 
 function deselectPart(id) {
   selected.delete(id);
-  document.querySelectorAll(`.detal[data-name="${id}"]`).forEach(el => {
-    el.classList.remove('on');
-    // Сбрасываем залипший hover на мобильных — ставим белый через style,
-    // потом убираем inline чтобы CSS снова взял контроль
-    el.style.setProperty('fill', '#fff', 'important');
-    el.style.setProperty('fill-opacity', '0.5', 'important');
-    setTimeout(() => {
-      el.style.removeProperty('fill');
-      el.style.removeProperty('fill-opacity');
-    }, 50);
-  });
+  document.querySelectorAll(`.detal[data-name="${id}"]`).forEach(el => el.classList.remove('on'));
   const t = document.getElementById('table_' + id);
   if (t) t.classList.remove('visible');
+  // Reset checkboxes
   SVC_KEYS.forEach(k => { partSvcState[id][k] = false; });
   updateTotal();
 }
@@ -863,10 +766,9 @@ document.addEventListener('click', e => {
   if (!detal) return;
   const name = detal.dataset.name;
   if (!name) return;
+  // Find canonical part id
   const part = PARTS.find(p => p.id === name);
   if (!part) return;
-  // Убираем фокус чтобы hover не залипал на мобильных
-  if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
   selectPart(part.id);
 });
 
