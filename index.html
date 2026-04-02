@@ -186,6 +186,137 @@
   }
   .qs-btn:hover { background: #c2c3c5; }
 
+  /* ADD CUSTOM PART BUTTON */
+  .add-part-btn {
+    background: var(--red);
+    font-family: 'Oswald', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: #fff;
+    padding: 12px 18px;
+    border-bottom: 3px solid #8a0016;
+    cursor: pointer;
+    transition: background .15s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    letter-spacing: 0.5px;
+  }
+  .add-part-btn:hover { background: #a8001d; }
+  .add-part-btn svg { fill: #fff; flex-shrink: 0; }
+
+  /* MODAL */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: #1e1e1e;
+    border: 1px solid #333;
+    border-top: 3px solid var(--red);
+    padding: 24px 28px;
+    width: 520px;
+    max-width: 95vw;
+    max-height: 85vh;
+    overflow-y: auto;
+    font-family: 'PT Sans', sans-serif;
+  }
+
+  .modal h2 {
+    font-family: 'Oswald', sans-serif;
+    color: #fff;
+    font-size: 17px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 16px;
+  }
+
+  /* Catalog list */
+  .catalog-list { display: flex; flex-direction: column; gap: 4px; }
+
+  .catalog-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #111;
+    border: 1px solid #2a2a2a;
+    padding: 10px 14px;
+    cursor: pointer;
+    transition: border-color .15s, background .15s;
+    gap: 12px;
+  }
+  .catalog-item:hover { background: #1a1a1a; border-color: var(--red); }
+  .catalog-item.already-added { opacity: 0.4; pointer-events: none; }
+
+  .catalog-item-name {
+    font-family: 'Oswald', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: #ddd;
+    flex: 1;
+  }
+
+  .catalog-item-prices {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+  .catalog-price-chip {
+    font-size: 10px;
+    color: #777;
+    background: #222;
+    padding: 2px 7px;
+    border: 1px solid #333;
+    white-space: nowrap;
+  }
+  .catalog-price-chip span { color: #aaa; font-weight: 700; }
+
+  .catalog-item-add {
+    background: var(--red);
+    color: #fff;
+    font-family: 'Oswald', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 5px 12px;
+    flex-shrink: 0;
+    letter-spacing: 0.5px;
+  }
+  .catalog-item:hover .catalog-item-add { background: #a8001d; }
+
+  .modal-btn {
+    font-family: 'Oswald', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 10px 22px;
+    cursor: pointer;
+    border: none;
+    outline: none;
+    transition: background .15s;
+  }
+  .modal-btn.cancel { background: #333; color: #999; }
+  .modal-btn.cancel:hover { background: #444; color: #ccc; }
+  .modal-btn.confirm { background: var(--red); color: #fff; }
+  .modal-btn.confirm:hover { background: #a8001d; }
+
+  .modal-btns {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+  }
+
   /* Parts tables */
   .tables-section { margin-top: 20px; }
 
@@ -214,7 +345,7 @@
   .mobile-part-name { display: none; }
 
   .pt-name {
-    width: 150px; min-width: 150px;
+    width: 170px; min-width: 170px;
     border: 1px solid var(--border);
     padding: 10px; text-align: center;
   }
@@ -223,36 +354,44 @@
     border-bottom: 1px solid var(--border);
     padding: 5px 0; margin: -10px -10px 10px;
   }
-  .pt-name .part-name-val { font-size: 16px; color: #4c4c4c; margin-top: 8px; }
+  .pt-name .part-name-val { font-size: 15px; color: #4c4c4c; margin-top: 8px; }
 
   .pt-services { flex: 1; }
   .pt-services-inner { display: flex; flex-wrap: wrap; }
 
   .svc-col {
-    flex: 1; min-width: 85px;
+    flex: 1; min-width: 95px;
     border: 1px solid var(--border);
     padding: 10px; text-align: center;
   }
   .svc-col .col-label {
-    font-size: 10px; color: #888;
+    font-size: 11px; color: #888;
     background: #f8f8f8;
     border-bottom: 1px solid var(--border);
-    padding: 5px 0; margin: -10px -10px 10px;
-    white-space: nowrap;
+    padding: 6px 4px; margin: -10px -10px 10px;
+    line-height: 1.35;
+    min-height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .svc-total-col {
-    flex: 1; min-width: 100px;
+    flex: 1; min-width: 110px;
     border: 1px solid var(--border);
     padding: 10px; text-align: center;
   }
   .svc-total-col .col-label {
-    font-size: 11px; color: #888;
+    font-size: 12px; color: #888;
     border-bottom: 1px solid var(--border);
     padding: 5px 0; margin: -10px -10px 10px;
+    min-height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   .svc-total-col .total-val {
-    font-size: 18px; color: var(--red);
+    font-size: 20px; color: var(--red);
     font-family: 'Oswald', sans-serif;
     font-weight: 600; margin-top: 8px;
   }
@@ -283,7 +422,7 @@
   .toggle-cb:checked + .toggle-label::before { background: var(--red); }
   .toggle-cb:checked + .toggle-label::after { left: 21px; }
 
-  .price-label { font-size: 12px; color: #4c4c4c; margin-top: 4px; }
+  .price-label { font-size: 13px; color: #4c4c4c; margin-top: 5px; font-weight: 700; }
 
   /* SVG detal styles */
   .detal {
@@ -315,13 +454,55 @@
   }
   .more-info .mi-val.sum-val { color: var(--red); border-left-color: var(--red); }
 
-  @media (max-width: 900px) {
+  /* Custom part badge */
+  .custom-badge {
+    display: inline-block;
+    background: #2a2a2a;
+    color: #888;
+    font-size: 10px;
+    font-family: 'Oswald', sans-serif;
+    letter-spacing: 0.5px;
+    padding: 1px 6px;
+    vertical-align: middle;
+    margin-left: 4px;
+    border: 1px solid #444;
+  }
+
+  /* Quality selector */
+  .quality-item { display: flex; align-items: center; gap: 6px; }
+  .quality-btns { display: flex; gap: 3px; }
+  .quality-btn {
+    font-family: 'Oswald', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background: #2a2a2a;
+    color: #666;
+    border: 1px solid #3a3a3a;
+    padding: 5px 10px 5px 10px;
+    cursor: pointer;
+    transition: all .15s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+    line-height: 1;
+  }
+  .quality-btn .q-hint { font-size: 9px; color: #555; font-weight: 400; letter-spacing: 0; }
+  .quality-btn:hover { background: #333; color: #aaa; border-color: #555; }
+  .quality-btn.active[data-q="lite"]     { background: #1a2a1a; color: #5c5; border-color: #3a5a3a; }
+  .quality-btn.active[data-q="standard"] { background: #2a2010; color: #da7; border-color: #5a4020; }
+  .quality-btn.active[data-q="premium"]  { background: #2a1a1a; color: #e55; border-color: #5a2a2a; }
+  .quality-btn.active .q-hint { color: inherit; opacity: 0.7; }
+
+
     .top-bar { grid-template-columns: 1fr 1fr; }
     .calc-title { grid-column: 1/-1; }
     .main-area { grid-template-columns: 1fr; }
     .top-view-area { display: none; }
-    .pt-name { width: 120px; min-width: 120px; }
-    .svc-col { min-width: 70px; }
+    .pt-name { width: 130px; min-width: 130px; }
+    .svc-col { min-width: 80px; }
   }
 
   @media (max-width: 600px) {
@@ -371,7 +552,7 @@
     .pt-services { width: 100%; }
     .pt-services-inner { display: grid; grid-template-columns: 1fr 1fr; }
     .svc-col { min-width: unset; padding: 8px 6px; }
-    .svc-col .col-label { font-size: 9px; white-space: normal; line-height: 1.2; }
+    .svc-col .col-label { font-size: 9px; white-space: normal; line-height: 1.2; min-height: unset; }
     .svc-total-col {
       grid-column: 1 / -1; min-width: unset;
       padding: 8px 12px;
@@ -379,7 +560,7 @@
       border-top: 2px solid var(--border);
       background: #f8f8f8;
     }
-    .svc-total-col .col-label { margin: 0; border: none; padding: 0; font-size: 12px; }
+    .svc-total-col .col-label { margin: 0; border: none; padding: 0; font-size: 12px; min-height: unset; }
     .svc-total-col .total-val { margin: 0; font-size: 20px; }
     .toggle-label { width: 38px; height: 20px; }
     .toggle-label::before { width: 38px; height: 20px; border-radius: 10px; }
@@ -512,6 +693,10 @@
       <div class="qs-btn" data-group="rear">Зад</div>
       <div class="qs-btn" data-group="bumpers">Бамперы</div>
       <div class="qs-btn" data-group="all">Все</div>
+      <div class="add-part-btn" id="open-modal-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+        Добавить деталь
+      </div>
     </div>
   </div>
 
@@ -529,6 +714,14 @@
       <span class="mi-label">На общую сумму:</span>
       <span class="mi-val sum-val" id="mi-sum">0 ₽</span>
     </div>
+    <div class="mi-item quality-item">
+      <span class="mi-label">Качество детали:</span>
+      <div class="quality-btns">
+        <button class="quality-btn active" data-q="lite">Лайт<span class="q-hint">+0 ₽</span></button>
+        <button class="quality-btn" data-q="standard">Стандарт<span class="q-hint">+1 000 ₽</span></button>
+        <button class="quality-btn" data-q="premium">Премиум<span class="q-hint">+3 000 ₽</span></button>
+      </div>
+    </div>
   </div>
 
   <!-- TABLES SECTION -->
@@ -536,21 +729,29 @@
 
 </div>
 
+<!-- MODAL: Add custom part from catalog -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal modal-catalog">
+    <h2>Выбрать деталь из каталога</h2>
+    <div class="catalog-list" id="catalog-list"></div>
+    <div class="modal-btns" style="margin-top:16px">
+      <button class="modal-btn cancel" id="modal-cancel">Закрыть</button>
+    </div>
+  </div>
+</div>
+
 <script>
 // ============================================================
-// Порядок столбцов из таблицы:
-// С/У | Р/С | Замена | Окрас 1 ст. | Окрас 2 ст. | Рем >50% | Рем <50%
-// Ключи: s | rc | z | p1 | p2 | r2 | r1
+// SVC_KEYS: s=Снять/Установить, rc=Разобрать/Собрать, z=Замена,
+//           p1=Окрас1, p2=Окрас2, r2=Рем>50%, r1=Рем<50%
+// Quality surcharge applies to rc and z keys.
 // ============================================================
 
 const PARTS = [
-  // Крыло П/Л (переднее): С/У=2000, Р/С=2000, Замена=4000, Окрас1=5000, Окрас2=0(—), Рем>50%=10000, Рем<50%=5000
   { id:'ppk', name:'Правое переднее крыло', groups:['right','lobby','all'],
     prices:{ sedan:{s:2000,rc:2000,z:4000,p1:5000,p2:0,r2:10000,r1:5000}, hatchback:{s:2000,rc:2000,z:4000,p1:5000,p2:0,r2:10000,r1:5000}, crossover:{s:2000,rc:2000,z:4000,p1:5000,p2:0,r2:10000,r1:5000} } },
   { id:'lpk', name:'Левое переднее крыло',  groups:['left','lobby','all'],
     prices:{ sedan:{s:2000,rc:2000,z:4000,p1:5000,p2:0,r2:10000,r1:5000}, hatchback:{s:2000,rc:2000,z:4000,p1:5000,p2:0,r2:10000,r1:5000}, crossover:{s:2000,rc:2000,z:4000,p1:5000,p2:0,r2:10000,r1:5000} } },
-
-  // Дверь: С/У=3000, Р/С=2000, Замена=5000, Окрас1=5000, Окрас2=7000, Рем>50%=15000, Рем<50%=10000
   { id:'ppd', name:'Правая передняя дверь', groups:['right','lobby','all'],
     prices:{ sedan:{s:3000,rc:2000,z:5000,p1:5000,p2:7000,r2:15000,r1:10000}, hatchback:{s:3000,rc:2000,z:5000,p1:5000,p2:7000,r2:15000,r1:10000}, crossover:{s:3000,rc:2000,z:5000,p1:5000,p2:7000,r2:15000,r1:10000} } },
   { id:'lpd', name:'Левая передняя дверь',  groups:['left','lobby','all'],
@@ -559,53 +760,71 @@ const PARTS = [
     prices:{ sedan:{s:3000,rc:2000,z:5000,p1:5000,p2:7000,r2:15000,r1:10000}, hatchback:{s:3000,rc:2000,z:5000,p1:5000,p2:7000,r2:15000,r1:10000}, crossover:{s:3000,rc:2000,z:5000,p1:5000,p2:7000,r2:15000,r1:10000} } },
   { id:'lzd', name:'Левая задняя дверь',    groups:['left','rear','all'],
     prices:{ sedan:{s:3000,rc:2000,z:5000,p1:5000,p2:7000,r2:15000,r1:10000}, hatchback:{s:3000,rc:2000,z:5000,p1:5000,p2:7000,r2:15000,r1:10000}, crossover:{s:3000,rc:2000,z:5000,p1:5000,p2:7000,r2:15000,r1:10000} } },
-
-  // Крыло З.Л/З.П: С/У=20000, Р/С=4000, Замена=20000, Окрас1=6000, Окрас2=0(—), Рем>50%=15000, Рем<50%=10000
   { id:'pzk', name:'Правое заднее крыло',   groups:['right','rear','all'],
     prices:{ sedan:{s:20000,rc:4000,z:20000,p1:6000,p2:0,r2:15000,r1:10000}, hatchback:{s:20000,rc:4000,z:20000,p1:6000,p2:0,r2:15000,r1:10000}, crossover:{s:20000,rc:4000,z:20000,p1:6000,p2:0,r2:15000,r1:10000} } },
   { id:'lzk', name:'Левое заднее крыло',    groups:['left','rear','all'],
     prices:{ sedan:{s:20000,rc:4000,z:20000,p1:6000,p2:0,r2:15000,r1:10000}, hatchback:{s:20000,rc:4000,z:20000,p1:6000,p2:0,r2:15000,r1:10000}, crossover:{s:20000,rc:4000,z:20000,p1:6000,p2:0,r2:15000,r1:10000} } },
-
-  // Бампер П/З: С/У=2000, Р/С=2000, Замена=4000, Окрас1=5000, Окрас2=0(—), Рем>50%=10000, Рем<50%=5000
   { id:'pb',  name:'Передний бампер',       groups:['lobby','bumpers','all'],
     prices:{ sedan:{s:2000,rc:2000,z:4000,p1:5000,p2:0,r2:10000,r1:5000}, hatchback:{s:2000,rc:2000,z:4000,p1:5000,p2:0,r2:10000,r1:5000}, crossover:{s:2000,rc:2000,z:4000,p1:5000,p2:0,r2:10000,r1:5000} } },
   { id:'zb',  name:'Задний бампер',         groups:['rear','bumpers','all'],
     prices:{ sedan:{s:2000,rc:2000,z:4000,p1:5000,p2:0,r2:10000,r1:5000}, hatchback:{s:2000,rc:2000,z:4000,p1:5000,p2:0,r2:10000,r1:5000}, crossover:{s:2000,rc:2000,z:4000,p1:5000,p2:0,r2:10000,r1:5000} } },
-
-  // Крыша: С/У=0(—), Р/С=10000, Замена=40000, Окрас1=8000, Окрас2=0(—), Рем>50%=30000, Рем<50%=15000
   { id:'kry', name:'Крыша',                 groups:['lobby','all'],
     prices:{ sedan:{s:0,rc:10000,z:40000,p1:8000,p2:0,r2:30000,r1:15000}, hatchback:{s:0,rc:10000,z:40000,p1:8000,p2:0,r2:30000,r1:15000}, crossover:{s:0,rc:10000,z:40000,p1:8000,p2:0,r2:30000,r1:15000} } },
-
-  // Капот: С/У=2000, Р/С=2000, Замена=4000, Окрас1=7000, Окрас2=9000, Рем>50%=20000, Рем<50%=10000
   { id:'kap', name:'Капот',                 groups:['lobby','all'],
     prices:{ sedan:{s:2000,rc:2000,z:4000,p1:7000,p2:9000,r2:20000,r1:10000}, hatchback:{s:2000,rc:2000,z:4000,p1:7000,p2:9000,r2:20000,r1:10000}, crossover:{s:2000,rc:2000,z:4000,p1:7000,p2:9000,r2:20000,r1:10000} } },
-
-  // Крышка баг/Дверь баг: С/У=3000, Р/С=3000, Замена=6000, Окрас1=7000, Окрас2=9000, Рем>50%=20000, Рем<50%=10000
   { id:'bag', name:'Крышка бага / Дверь бага', groups:['rear','all'],
     prices:{ sedan:{s:3000,rc:3000,z:6000,p1:7000,p2:9000,r2:20000,r1:10000}, hatchback:{s:3000,rc:3000,z:6000,p1:7000,p2:9000,r2:20000,r1:10000}, crossover:{s:3000,rc:3000,z:6000,p1:7000,p2:9000,r2:20000,r1:10000} } },
-
-  // Порог Л/П: С/У=3000, Р/С=2000, Замена=15000, Окрас1=5000, Окрас2=0(—), Рем>50%=12000, Рем<50%=6000
   { id:'pp',  name:'Правый порог',           groups:['right','all'],
     prices:{ sedan:{s:3000,rc:2000,z:15000,p1:5000,p2:0,r2:12000,r1:6000}, hatchback:{s:3000,rc:2000,z:15000,p1:5000,p2:0,r2:12000,r1:6000}, crossover:{s:3000,rc:2000,z:15000,p1:5000,p2:0,r2:12000,r1:6000} } },
   { id:'lp',  name:'Левый порог',            groups:['left','all'],
     prices:{ sedan:{s:3000,rc:2000,z:15000,p1:5000,p2:0,r2:12000,r1:6000}, hatchback:{s:3000,rc:2000,z:15000,p1:5000,p2:0,r2:12000,r1:6000}, crossover:{s:3000,rc:2000,z:15000,p1:5000,p2:0,r2:12000,r1:6000} } },
 ];
 
-// Порядок и метки столбцов строго по таблице
-const SVC_KEYS   = ['s',    'rc',  'z',      'p1',         'p2',          'r2',       'r1'      ];
-const SVC_LABELS = ['С/У', 'Р/С', 'Замена', 'Окрас 1 ст.', 'Окрас 2 ст.', 'Рем >50%', 'Рем <50%'];
+// Catalog — дополнительные детали (не на схеме)
+const CATALOG = [
+  { name:'Деталь',          prices:{s:4000,rc:5000,z:4000,p1:5000,p2:0,r2:15000,r1:7000} },
+  { name:'Зеркало левое',   prices:{s:1500,rc:1500,z:3000,p1:3000,p2:0,r2:0,r1:0} },
+  { name:'Зеркало правое',  prices:{s:1500,rc:1500,z:3000,p1:3000,p2:0,r2:0,r1:0} },
+  { name:'Решётка радиатора',prices:{s:1000,rc:1000,z:3000,p1:3000,p2:0,r2:0,r1:0} },
+  { name:'Спойлер',         prices:{s:1500,rc:1500,z:4000,p1:4000,p2:0,r2:8000,r1:4000} },
+  { name:'Накладка бампера',prices:{s:1000,rc:0,z:2500,p1:3000,p2:0,r2:5000,r1:3000} },
+  { name:'Арка колёсная',   prices:{s:2000,rc:2000,z:5000,p1:4000,p2:0,r2:8000,r1:4000} },
+  { name:'Молдинг двери',   prices:{s:800,rc:0,z:1500,p1:2000,p2:0,r2:0,r1:0} },
+  { name:'Подножка',        prices:{s:2000,rc:2000,z:6000,p1:4000,p2:0,r2:0,r1:0} },
+  { name:'Капот (алюм.)',   prices:{s:2000,rc:2000,z:6000,p1:8000,p2:10000,r2:25000,r1:12000} },
+];
+
+const QUALITY_BONUS = { lite: 0, standard: 1000, premium: 3000 };
+// quality bonus applies to rc and z
+const QUALITY_KEYS = ['rc', 'z'];
+
+const SVC_KEYS   = ['s',                   'rc',                    'z',      'p1',          'p2',           'r2',       'r1'      ];
+const SVC_LABELS = ['Снять /\nУстановить', 'Разобрать /\nСобрать', 'Замена', 'Окрас 1 ст.', 'Окрас 2 ст.', 'Рем >50%', 'Рем <50%'];
 
 let currentType = 'sedan';
+let currentQuality = 'lite';
 let selected = new Set();
 let partSvcState = {};
+let customParts = [];
+let customCounter = 0;
+
 PARTS.forEach(p => { partSvcState[p.id] = {}; SVC_KEYS.forEach(k => partSvcState[p.id][k] = false); });
 
 const TYPE_LABELS = { sedan: 'Седан', hatchback: 'Хэтчбек', crossover: 'Кроссовер' };
 
+function getAllParts() { return [...PARTS, ...customParts]; }
+
+// Returns effective price for a key, applying quality bonus if applicable
+function effectiveVal(baseVal, key) {
+  if (baseVal === 0) return 0;
+  if (QUALITY_KEYS.includes(key)) return baseVal + QUALITY_BONUS[currentQuality];
+  return baseVal;
+}
+
 function buildTables() {
   const sec = document.getElementById('tables-section');
   sec.innerHTML = '';
-  PARTS.forEach(part => {
+  getAllParts().forEach(part => {
     const div = document.createElement('div');
     div.className = 'part-table';
     div.id = 'table_' + part.id;
@@ -616,7 +835,7 @@ function buildTables() {
 }
 
 function attachEvents() {
-  PARTS.forEach(part => {
+  getAllParts().forEach(part => {
     SVC_KEYS.forEach(k => {
       const cb = document.getElementById('cb_' + part.id + '_' + k);
       if (cb) cb.addEventListener('change', () => {
@@ -631,22 +850,36 @@ function attachEvents() {
 }
 
 function buildTableHTML(part) {
-  const pr = part.prices[currentType];
+  const basePr = part.isCustom ? part.prices : part.prices[currentType];
+  const isCustom = part.isCustom;
+
   const svcCols = SVC_KEYS.map((k, i) => {
-    const val = pr[k];
-    const displayVal = val > 0 ? val.toLocaleString('ru') + ' ₽' : '—';
-    const disabled = val === 0 ? 'disabled' : '';
+    const baseVal = basePr[k];
+    const val = effectiveVal(baseVal, k);
+    const hasBonus = QUALITY_KEYS.includes(k) && baseVal > 0 && QUALITY_BONUS[currentQuality] > 0;
+    let displayVal;
+    if (baseVal === 0) {
+      displayVal = '—';
+    } else if (hasBonus) {
+      displayVal = val.toLocaleString('ru') + ' ₽<small style="color:#888;font-size:10px;display:block;font-weight:400">+' + QUALITY_BONUS[currentQuality].toLocaleString('ru') + '</small>';
+    } else {
+      displayVal = val.toLocaleString('ru') + ' ₽';
+    }
+    const disabled = baseVal === 0 ? 'disabled' : '';
+    const labelHtml = SVC_LABELS[i].replace('\n', '<br>');
     return `
       <div class="svc-col">
-        <div class="col-label">${SVC_LABELS[i]}</div>
+        <div class="col-label">${labelHtml}</div>
         <div class="toggle-wrap">
           <input type="checkbox" class="toggle-cb" id="cb_${part.id}_${k}"
             ${partSvcState[part.id][k] ? 'checked' : ''} ${disabled}>
-          <label class="toggle-label" for="cb_${part.id}_${k}" style="${val===0?'opacity:.35;pointer-events:none':''}"></label>
+          <label class="toggle-label" for="cb_${part.id}_${k}" style="${baseVal===0?'opacity:.35;pointer-events:none':''}"></label>
         </div>
         <div class="price-label">${displayVal}</div>
       </div>`;
   }).join('');
+
+  const customBadge = isCustom ? '<span class="custom-badge">доп.</span>' : '';
 
   return `
     <div class="pt-inner">
@@ -660,7 +893,7 @@ function buildTableHTML(part) {
       </div>
       <div class="pt-name">
         <div class="col-label">элемент</div>
-        <div class="part-name-val">${part.name}</div>
+        <div class="part-name-val">${part.name}${customBadge}</div>
       </div>
       <div class="pt-services">
         <div class="pt-services-inner">
@@ -675,7 +908,7 @@ function buildTableHTML(part) {
 }
 
 function rebuildTable(partId) {
-  const part = PARTS.find(p => p.id === partId);
+  const part = getAllParts().find(p => p.id === partId);
   const div = document.getElementById('table_' + partId);
   if (!div || !part) return;
   div.innerHTML = buildTableHTML(part);
@@ -693,10 +926,10 @@ function rebuildTable(partId) {
 }
 
 function updatePartTotal(partId) {
-  const part = PARTS.find(p => p.id === partId);
-  const pr = part.prices[currentType];
+  const part = getAllParts().find(p => p.id === partId);
+  const basePr = part.isCustom ? part.prices : part.prices[currentType];
   let sum = 0;
-  SVC_KEYS.forEach(k => { if (partSvcState[partId][k]) sum += pr[k]; });
+  SVC_KEYS.forEach(k => { if (partSvcState[partId][k]) sum += effectiveVal(basePr[k], k); });
   const el = document.getElementById('total_' + partId);
   if (el) el.textContent = sum.toLocaleString('ru') + ' ₽';
 }
@@ -704,9 +937,10 @@ function updatePartTotal(partId) {
 function updateTotal() {
   let total = 0;
   selected.forEach(id => {
-    const part = PARTS.find(p => p.id === id);
-    const pr = part.prices[currentType];
-    SVC_KEYS.forEach(k => { if (partSvcState[id][k]) total += pr[k]; });
+    const part = getAllParts().find(p => p.id === id);
+    if (!part) return;
+    const basePr = part.isCustom ? part.prices : part.prices[currentType];
+    SVC_KEYS.forEach(k => { if (partSvcState[id][k]) total += effectiveVal(basePr[k], k); });
   });
   document.getElementById('el-count').textContent = selected.size;
   const sumStr = total.toLocaleString('ru') + ' ₽';
@@ -738,7 +972,15 @@ function deselectPart(id) {
   });
   const t = document.getElementById('table_' + id);
   if (t) t.classList.remove('visible');
-  SVC_KEYS.forEach(k => { partSvcState[id][k] = false; });
+  const idx = customParts.findIndex(p => p.id === id);
+  if (idx !== -1) {
+    customParts.splice(idx, 1);
+    delete partSvcState[id];
+    const tableDiv = document.getElementById('table_' + id);
+    if (tableDiv) tableDiv.remove();
+  } else {
+    SVC_KEYS.forEach(k => { partSvcState[id][k] = false; });
+  }
   updateTotal();
 }
 
@@ -747,7 +989,7 @@ document.addEventListener('click', e => {
   if (!detal) return;
   const name = detal.dataset.name;
   if (!name) return;
-  const part = PARTS.find(p => p.id === name);
+  const part = getAllParts().find(p => p.id === name);
   if (!part) return;
   if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
   selectPart(part.id);
@@ -782,8 +1024,98 @@ document.querySelectorAll('.qs-btn').forEach(btn => {
   });
 });
 
+// ---- QUALITY SELECTOR ----
+document.querySelectorAll('.quality-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.quality-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentQuality = btn.dataset.q;
+    selected.forEach(id => rebuildTable(id));
+    updateTotal();
+  });
+});
+
+// ---- CATALOG MODAL ----
+const modalOverlay = document.getElementById('modal-overlay');
+const modalCancel  = document.getElementById('modal-cancel');
+const openModalBtn = document.getElementById('open-modal-btn');
+
+function buildCatalogList() {
+  const list = document.getElementById('catalog-list');
+  list.innerHTML = '';
+  CATALOG.forEach((item, idx) => {
+    const alreadyAdded = customParts.some(cp => cp.name === item.name);
+    const div = document.createElement('div');
+    div.className = 'catalog-item' + (alreadyAdded ? ' already-added' : '');
+
+    // Price chips: show non-zero values
+    const chips = SVC_KEYS.map((k, i) => {
+      const v = item.prices[k];
+      if (!v) return '';
+      const short = ['С/У','Р/С','Зам','Окр1','Окр2','Р>50','Р<50'][i];
+      return `<span class="catalog-price-chip">${short}: <span>${v.toLocaleString('ru')} ₽</span></span>`;
+    }).join('');
+
+    div.innerHTML = `
+      <div class="catalog-item-name">${item.name}</div>
+      <div class="catalog-item-prices">${chips}</div>
+      <div class="catalog-item-add">+ Добавить</div>`;
+
+    div.addEventListener('click', () => {
+      if (div.classList.contains('already-added')) return;
+      addCustomPart(item.name, { ...item.prices });
+      div.classList.add('already-added');
+    });
+
+    list.appendChild(div);
+  });
+}
+
+function openModal() {
+  buildCatalogList();
+  modalOverlay.classList.add('open');
+}
+function closeModal() { modalOverlay.classList.remove('open'); }
+
+openModalBtn.addEventListener('click', openModal);
+modalCancel.addEventListener('click', closeModal);
+modalOverlay.addEventListener('click', e => { if (e.target === modalOverlay) closeModal(); });
+
+function addCustomPart(name, prices) {
+  customCounter++;
+  const id = 'custom_' + customCounter;
+  const part = { id, name, isCustom: true, groups: [], prices };
+  customParts.push(part);
+  partSvcState[id] = {};
+  SVC_KEYS.forEach(k => partSvcState[id][k] = false);
+
+  const sec = document.getElementById('tables-section');
+  const div = document.createElement('div');
+  div.className = 'part-table';
+  div.id = 'table_' + id;
+  div.innerHTML = buildTableHTML(part);
+  sec.appendChild(div);
+
+  SVC_KEYS.forEach(k => {
+    const cb = document.getElementById('cb_' + id + '_' + k);
+    if (cb) cb.addEventListener('change', () => {
+      partSvcState[id][k] = cb.checked;
+      updatePartTotal(id);
+      updateTotal();
+    });
+  });
+  const trash = document.getElementById('trash_' + id);
+  if (trash) trash.addEventListener('click', () => deselectPart(id));
+
+  selectPart(id);
+  // scroll to new table
+  const tableEl = document.getElementById('table_' + id);
+  if (tableEl) setTimeout(() => tableEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 100);
+}
+
 buildTables();
 updateTotal();
 </script>
+
 </body>
 </html>
