@@ -17,7 +17,9 @@
     --border: #ddd;
   }
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  svg, path { outline: none; }
+  svg { touch-action: manipulation; }
 
   body {
     font-family: 'PT Sans', sans-serif;
@@ -242,6 +244,7 @@
 
   .pt-trash svg { fill: #ccc; transition: fill .2s; }
   .pt-trash:hover svg { fill: var(--red); }
+  .mobile-part-name { display: none; }
 
   .pt-name {
     width: 150px;
@@ -389,11 +392,14 @@
     stroke: #000;
     stroke-width: 0.5;
     transition: fill .15s, fill-opacity .15s;
+    -webkit-tap-highlight-color: transparent;
   }
 
-  .detal:hover {
-    fill: #ff4444 !important;
-    fill-opacity: 0.65 !important;
+  @media (hover: hover) and (pointer: fine) {
+    .detal:hover {
+      fill: #ff4444 !important;
+      fill-opacity: 0.65 !important;
+    }
   }
 
   .detal.on {
@@ -434,10 +440,69 @@
   }
 
   @media (max-width: 600px) {
+    h1 { font-size: 20px; letter-spacing: 1px; margin-bottom: 10px; }
+    #calculator { padding: 8px; }
+
     .top-bar { grid-template-columns: 1fr; }
-    .counter-box { grid-column: 1/-1; }
-    .pt-trash { width: 60px; min-width: 60px; }
-    .pt-name { width: 100px; min-width: 100px; font-size: 13px; }
+    .calc-title { display: none; }
+    .type-selector { grid-template-columns: 1fr 1fr 1fr; border-top: none; }
+    .auto-btn { padding: 10px 4px 40px; font-size: 11px; }
+    .counter-box { grid-template-columns: 1fr 1fr; padding: 10px; }
+    .counter-item .num { font-size: 22px; }
+
+    .main-area { grid-template-columns: 1fr; display: flex; flex-direction: column; }
+    .big-car-area { min-height: unset; }
+    .top-view-area {
+      display: flex !important;
+      justify-content: center;
+      padding: 12px;
+      background: #1a1a1a;
+    }
+    .top-view-area svg { width: 160px; height: auto; }
+
+    .quick-select { grid-template-columns: 1fr; }
+    .qs-label { padding: 8px 12px; font-size: 10px; border-bottom: none; }
+    .qs-btns { display: grid; grid-template-columns: repeat(3, 1fr); }
+    .qs-btn { padding: 10px 4px; font-size: 10px; text-align: center; }
+
+    .more-info { font-size: 11px; padding: 10px 12px; }
+    .more-info span { font-size: 10px; padding: 3px 6px; margin: 2px; }
+
+    .pt-inner { flex-direction: column; }
+    .pt-trash {
+      width: 100%; min-width: unset;
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 12px;
+      border-bottom: 2px solid var(--red);
+      background: #f8f8f8;
+    }
+    .pt-trash .col-label { display: none; }
+    .pt-trash svg { width: 22px; height: 22px; flex-shrink: 0; }
+    .mobile-part-name {
+      display: block;
+      font-family: 'Oswald', sans-serif;
+      font-size: 13px; font-weight: 600;
+      color: #333; text-transform: uppercase; flex: 1;
+    }
+    .pt-name { display: none; }
+    .pt-services { width: 100%; }
+    .pt-services-inner { display: grid; grid-template-columns: 1fr 1fr; }
+    .svc-col { min-width: unset; padding: 8px 6px; }
+    .svc-col .col-label { font-size: 9px; white-space: normal; line-height: 1.2; }
+    .svc-total-col {
+      grid-column: 1 / -1; min-width: unset;
+      padding: 8px 12px;
+      display: flex; align-items: center; justify-content: space-between;
+      border-top: 2px solid var(--border);
+      background: #f8f8f8;
+    }
+    .svc-total-col .col-label { margin: 0; border: none; padding: 0; font-size: 12px; }
+    .svc-total-col .total-val { margin: 0; font-size: 20px; }
+    .toggle-label { width: 38px; height: 20px; }
+    .toggle-label::before { width: 38px; height: 20px; border-radius: 10px; }
+    .toggle-label::after { width: 20px; height: 20px; }
+    .toggle-cb:checked + .toggle-label::after { left: 18px; }
+    .price-label { font-size: 11px; }
   }
 </style>
 </head>
@@ -675,6 +740,7 @@ function buildTableHTML(part) {
           <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12z"/>
           <path d="M19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
         </svg>
+        <span class="mobile-part-name">${part.name}</span>
       </div>
       <div class="pt-name">
         <div class="col-label">элемент</div>
@@ -752,10 +818,17 @@ function selectPart(id) {
 
 function deselectPart(id) {
   selected.delete(id);
-  document.querySelectorAll(`.detal[data-name="${id}"]`).forEach(el => el.classList.remove('on'));
+  document.querySelectorAll(`.detal[data-name="${id}"]`).forEach(el => {
+    el.classList.remove('on');
+    el.style.setProperty('fill', '#fff', 'important');
+    el.style.setProperty('fill-opacity', '0.5', 'important');
+    setTimeout(() => {
+      el.style.removeProperty('fill');
+      el.style.removeProperty('fill-opacity');
+    }, 50);
+  });
   const t = document.getElementById('table_' + id);
   if (t) t.classList.remove('visible');
-  // Reset checkboxes
   SVC_KEYS.forEach(k => { partSvcState[id][k] = false; });
   updateTotal();
 }
@@ -766,9 +839,9 @@ document.addEventListener('click', e => {
   if (!detal) return;
   const name = detal.dataset.name;
   if (!name) return;
-  // Find canonical part id
   const part = PARTS.find(p => p.id === name);
   if (!part) return;
+  if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
   selectPart(part.id);
 });
 
