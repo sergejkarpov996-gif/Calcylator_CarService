@@ -150,9 +150,8 @@
   .top-view-area svg { width: 220px; height: auto; max-height: 420px; }
 
   .quick-select {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    align-items: center;
+    display: flex;
+    align-items: stretch;
     background: #d7d8d9;
     margin-top: 0;
   }
@@ -185,6 +184,20 @@
     transition: background .15s;
   }
   .qs-btn:hover { background: #c2c3c5; }
+
+  .add-detail-btn {
+    background: var(--red) !important;
+    color: #fff !important;
+    border-bottom-color: #900 !important;
+    border-right: none !important;
+    margin-left: auto;
+    padding: 12px 20px !important;
+    font-size: 12px !important;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .add-detail-btn:hover { background: #b50120 !important; }
 
   /* Parts tables */
   .tables-section { margin-top: 20px; }
@@ -219,9 +232,10 @@
     padding: 10px; text-align: center;
   }
   .pt-name .col-label {
-    font-size: 11px; color: #888;
+    font-size: 13px; color: #888;
     border-bottom: 1px solid var(--border);
-    padding: 5px 0; margin: -10px -10px 10px;
+    padding: 6px 0; margin: -10px -10px 10px;
+    font-family: 'Oswald', sans-serif; font-weight: 500;
   }
   .pt-name .part-name-val { font-size: 16px; color: #4c4c4c; margin-top: 8px; }
 
@@ -234,11 +248,13 @@
     padding: 10px; text-align: center;
   }
   .svc-col .col-label {
-    font-size: 10px; color: #888;
-    background: #f8f8f8;
+    font-size: 12px; color: #555;
+    background: #f0f0f0;
     border-bottom: 1px solid var(--border);
-    padding: 5px 0; margin: -10px -10px 10px;
+    padding: 7px 4px; margin: -10px -10px 10px;
     white-space: nowrap;
+    font-family: 'Oswald', sans-serif; font-weight: 500;
+    letter-spacing: 0.3px;
   }
 
   .svc-total-col {
@@ -247,9 +263,10 @@
     padding: 10px; text-align: center;
   }
   .svc-total-col .col-label {
-    font-size: 11px; color: #888;
+    font-size: 13px; color: #555;
     border-bottom: 1px solid var(--border);
-    padding: 5px 0; margin: -10px -10px 10px;
+    padding: 7px 0; margin: -10px -10px 10px;
+    font-family: 'Oswald', sans-serif; font-weight: 500;
   }
   .svc-total-col .total-val {
     font-size: 18px; color: var(--red);
@@ -483,6 +500,7 @@
       <div class="qs-btn" data-group="bumpers">Бамперы</div>
       <div class="qs-btn" data-group="all">Все</div>
     </div>
+    <div class="qs-btn add-detail-btn" id="add-detail-btn">+ Добавить деталь</div>
   </div>
 
   <!-- more-info bar -->
@@ -738,6 +756,27 @@ document.querySelectorAll('.auto-btn').forEach(btn => {
     currentTier = btn.dataset.type;
     // Единственный SVG всегда остаётся видимым (type_light)
     selected.forEach(id => rebuildTable(id));
+    // Пересобираем динамические детали
+    Object.keys(partSvcState).forEach(id => {
+      if (id.startsWith('detail_')) {
+        const div = document.getElementById('table_' + id);
+        if (div) {
+          const nameEl = div.querySelector('.part-name-val');
+          const name = nameEl ? nameEl.textContent : 'Деталь';
+          div.innerHTML = buildDetailHTML(id, name);
+          SVC_KEYS.forEach(k => {
+            const cb = document.getElementById('cb_' + id + '_' + k);
+            if (cb) cb.addEventListener('change', () => {
+              partSvcState[id][k] = cb.checked;
+              updateDetailTotal(id);
+            });
+          });
+          const trash = document.getElementById('trash_' + id);
+          if (trash) trash.addEventListener('click', () => removeDetail(id));
+          updateDetailTotal(id);
+        }
+      }
+    });
     updateTotal();
   });
 });
@@ -761,6 +800,154 @@ document.querySelectorAll('.qs-btn').forEach(btn => {
 
 buildTables();
 updateTotal();
+
+// ── Кнопка «+ Добавить деталь» ──────────────────────────────
+// Базовые цены для «Деталь»: С/У=4000, Р/С=5000, Замена=4000, Окрас1=5000, Окрас2=0(—), Рем>50%=15000, Рем<50%=7000
+const DETAIL_BASE = {s:4000, rc:5000, z:4000, p1:5000, p2:0, r2:15000, r1:7000};
+let detailUid = 0; // уникальный ID для ключей (не сбрасывается)
+
+function getDetailDisplayNumber() {
+  // Считаем сколько detail-строк сейчас на экране
+  return Object.keys(partSvcState).filter(id => id.startsWith('detail_')).length + 1;
+}
+
+function renumberDetails() {
+  // Перенумеровываем все оставшиеся детали по порядку
+  const detailIds = Object.keys(partSvcState)
+    .filter(id => id.startsWith('detail_'))
+    .sort((a, b) => parseInt(a.split('_')[1]) - parseInt(b.split('_')[1]));
+  detailIds.forEach((id, idx) => {
+    const nameEl = document.querySelector('#table_' + id + ' .part-name-val');
+    const mobileEl = document.querySelector('#table_' + id + ' .mobile-part-name');
+    const newName = 'Деталь' + (detailIds.length > 1 ? ' ' + (idx + 1) : '');
+    if (nameEl) nameEl.textContent = newName;
+    if (mobileEl) mobileEl.textContent = newName;
+  });
+}
+
+document.getElementById('add-detail-btn').addEventListener('click', () => {
+  detailUid++;
+  const id = 'detail_' + detailUid;
+  const num = getDetailDisplayNumber();
+  const name = 'Деталь' + (num > 1 ? ' ' + num : '');
+
+  // Добавляем цены в BASE_PRICES чтобы getPrices работал
+  BASE_PRICES[id] = { ...DETAIL_BASE };
+
+  // Добавляем состояние чекбоксов
+  partSvcState[id] = {};
+  SVC_KEYS.forEach(k => partSvcState[id][k] = false);
+
+  // Создаём DOM-строку
+  const sec = document.getElementById('tables-section');
+  const div = document.createElement('div');
+  div.className = 'part-table visible';
+  div.id = 'table_' + id;
+  div.innerHTML = buildDetailHTML(id, name);
+  sec.appendChild(div);
+
+  // Вешаем события
+  SVC_KEYS.forEach(k => {
+    const cb = document.getElementById('cb_' + id + '_' + k);
+    if (cb) cb.addEventListener('change', () => {
+      partSvcState[id][k] = cb.checked;
+      updateDetailTotal(id);
+      updateTotal();
+    });
+  });
+  const trash = document.getElementById('trash_' + id);
+  if (trash) trash.addEventListener('click', () => removeDetail(id));
+
+  updateTotal();
+});
+
+function buildDetailHTML(id, name) {
+  const pr = getPrices(id, currentTier);
+  const svcCols = SVC_KEYS.map((k, i) => {
+    const val = pr[k];
+    const displayVal = val > 0 ? val.toLocaleString('ru') + ' ₽' : '—';
+    const disabled = val === 0 ? 'disabled' : '';
+    return `
+      <div class="svc-col">
+        <div class="col-label">${SVC_LABELS[i]}</div>
+        <div class="toggle-wrap">
+          <input type="checkbox" class="toggle-cb" id="cb_${id}_${k}" ${disabled}>
+          <label class="toggle-label" for="cb_${id}_${k}" style="${val===0?'opacity:.35;pointer-events:none':''}"></label>
+        </div>
+        <div class="price-label">${displayVal}</div>
+      </div>`;
+  }).join('');
+
+  return `
+    <div class="pt-inner">
+      <div class="pt-trash" id="trash_${id}">
+        <div class="col-label">-</div>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="32" height="32">
+          <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12z"/>
+          <path d="M19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+        </svg>
+        <span class="mobile-part-name">${name}</span>
+      </div>
+      <div class="pt-name">
+        <div class="col-label">элемент</div>
+        <div class="part-name-val">${name}</div>
+      </div>
+      <div class="pt-services">
+        <div class="pt-services-inner">
+          ${svcCols}
+          <div class="svc-total-col">
+            <div class="col-label">сумма</div>
+            <div class="total-val" id="total_${id}">0 ₽</div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function updateDetailTotal(id) {
+  const pr = getPrices(id, currentTier);
+  let sum = 0;
+  SVC_KEYS.forEach(k => { if (partSvcState[id][k]) sum += pr[k]; });
+  const el = document.getElementById('total_' + id);
+  if (el) el.textContent = sum.toLocaleString('ru') + ' ₽';
+  updateTotal();
+}
+
+function removeDetail(id) {
+  const div = document.getElementById('table_' + id);
+  if (div) div.remove();
+  delete partSvcState[id];
+  delete BASE_PRICES[id];
+  renumberDetails();
+  updateTotal();
+}
+
+// Переопределяем updateTotal чтобы учитывать детали
+const _origUpdateTotal = updateTotal;
+// Патчим updateTotal для динамических деталей
+function updateTotal() {
+  let total = 0;
+  // Выбранные SVG-детали
+  selected.forEach(id => {
+    const pr = getPrices(id, currentTier);
+    SVC_KEYS.forEach(k => { if (partSvcState[id] && partSvcState[id][k]) total += pr[k]; });
+  });
+  // Добавленные детали (detail_N)
+  Object.keys(partSvcState).forEach(id => {
+    if (id.startsWith('detail_')) {
+      const pr = getPrices(id, currentTier);
+      SVC_KEYS.forEach(k => { if (partSvcState[id][k]) total += pr[k]; });
+    }
+  });
+  const detailCount = Object.keys(partSvcState).filter(id => id.startsWith('detail_')).length;
+  const totalCount = selected.size + detailCount;
+  document.getElementById('el-count').textContent = totalCount;
+  const sumStr = total.toLocaleString('ru') + ' ₽';
+  document.getElementById('el-sum').textContent = sumStr;
+  document.getElementById('mi-count').textContent = totalCount;
+  document.getElementById('mi-sum').textContent = sumStr;
+  document.getElementById('mi-type').textContent = TIER_LABELS[currentTier];
+}
 </script>
 </body>
 </html>
