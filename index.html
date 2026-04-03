@@ -357,10 +357,18 @@
       padding: 12px; background: #1a1a1a;
     }
     .top-view-area svg { width: 160px; height: auto; }
-    .quick-select { grid-template-columns: 1fr; }
+    .quick-select { flex-direction: column; }
     .qs-label { padding: 8px 12px; font-size: 10px; border-bottom: none; }
     .qs-btns { display: grid; grid-template-columns: repeat(3, 1fr); }
     .qs-btn { padding: 10px 4px; font-size: 10px; text-align: center; }
+    .add-detail-btn {
+      width: 100% !important;
+      text-align: center;
+      padding: 12px 8px !important;
+      font-size: 12px !important;
+      margin-left: 0 !important;
+      border-top: 1px solid rgba(255,255,255,0.15) !important;
+    }
     .more-info {
       font-size: 11px; padding: 10px 12px;
       display: grid; grid-template-columns: 1fr 1fr;
